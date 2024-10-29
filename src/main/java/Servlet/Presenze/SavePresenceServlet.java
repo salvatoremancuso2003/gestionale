@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Servlet;
+package Servlet.Presenze;
 
 import Entity.InfoTrack;
 import Entity.Presenza;
@@ -10,6 +10,10 @@ import Entity.TipoPresenza;
 import Entity.Utente;
 import Enum.Tipo_presenza_enum;
 import Utils.Utility;
+import static Utils.Utility.estraiEccezione;
+import static Utils.Utility.logfile;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -20,14 +24,38 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SavePresenceServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        boolean isPresence = Boolean.parseBoolean(request.getParameter("isPresence"));
+        boolean isDetails = Boolean.parseBoolean(request.getParameter("isDetails"));
+
+        try {
+            if (isPresence) {
+                savePresence(request, response);
+            }else if(isDetails){
+                getDettagliPresenza(request, response);
+            }
+
+        } catch (ServletException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    //Metodo salvataggio presenza - TimbroE,TimbroU - modalTimbro Utente's pages
+    protected void savePresence(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String tipo = request.getParameter("tipo");
         String modality = request.getParameter("modality");
@@ -156,6 +184,72 @@ public class SavePresenceServlet extends HttpServlet {
                 emf.close();
             }
         }
+    }
+    
+    
+    //DataTable dettagli timbro : dettagliPresenza.jsp
+    protected void getDettagliPresenza(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String userIdParam = request.getParameter("utenteId");
+        Long userId = Long.parseLong(userIdParam);
+        String data = request.getParameter("data");
+        LocalDate giorno = LocalDate.parse(data);
+        List<Presenza> presenze = getPresenzeByUserId(userId, giorno);
+
+        JsonObject jsonResponse = new JsonObject();
+        JsonArray dataArray = new JsonArray();
+
+        for (Presenza presenza : presenze) {
+            if (presenza != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("tipo", presenza.getTipo().getTipo().toString());
+                jsonObject.addProperty("nomeCompleto", presenza.getUtente().getNome() + " " + presenza.getUtente().getCognome());
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                jsonObject.addProperty("ingresso", sdf.format(presenza.getEntrata()));
+                jsonObject.addProperty("uscita", presenza.getUscita() != null ? sdf.format(presenza.getUscita()) : "Uscita non ancora registrata");
+                dataArray.add(jsonObject);
+            }
+        }
+
+        jsonResponse.addProperty("iTotalRecords", dataArray.size());
+        jsonResponse.addProperty("iTotalDisplayRecords", dataArray.size());
+        jsonResponse.add("aaData", dataArray);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        try (PrintWriter out = response.getWriter()) {
+            out.print(jsonResponse.toString());
+        }
+    }
+
+    private List<Presenza> getPresenzeByUserId(Long userId, LocalDate giorno) {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
+        List<Presenza> presenze = new ArrayList<>();
+
+        try {
+            emf = Persistence.createEntityManagerFactory("gestionale");
+            em = emf.createEntityManager();
+
+            presenze
+                    = em.createQuery("SELECT p FROM Presenza p WHERE p.utente.id = :userId AND FUNCTION('DATE', p.entrata) = :giorno", Presenza.class
+                    )
+                            .setParameter("userId", userId)
+                            .setParameter("giorno", giorno)
+                            .getResultList();
+
+        } catch (Exception e) {
+            logfile.severe(estraiEccezione(e));
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (emf != null) {
+                emf.close();
+            }
+        }
+        return presenze;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -288,7 +288,7 @@ function mostraNotifiche() {
     var notificheModal = new bootstrap.Modal(document.getElementById('notificheModal'));
     var segnaComeLettoButton = document.getElementById('segnaComeLettoButton');
     $.ajax({
-        url: 'GetNotificheCountServlet',
+        url: 'GetNotificheServlet',
         type: 'POST',
         dataType: 'json',
         success: function (data) {
@@ -325,8 +325,9 @@ function mostraNotifiche() {
 
 function segnaComeLetto() {
     $.ajax({
-        url: 'SegnaComeLettoServlet',
+        url: 'NotificaServlet',
         type: 'POST',
+        data: {read: true},
         success: function () {
             $('#notificaBadge .SmartOOP-text-standard').text('0');
             console.log("Notifiche segnate come lette.");
@@ -342,14 +343,15 @@ function segnaComeLetto() {
 function invioRichiestaSenzaOre() {
     const formData = new URLSearchParams(new FormData(document.getElementById("richiediPermessoForm")));
     formData.append("forzaInvio", "true");
+    formData.append("isCreate", "true");
 
-    fetch("RichiestaPermessoServlet2", {
+    fetch("RichiestaPermessoServlet", {
         method: "POST",
         body: formData
     })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = "successPage.jsp";
+                    window.location.href = "US_gestionale.jsp?esito=OK&codice=009";
                 } else {
                     throw new Error("Errore durante l'invio della richiesta.");
                 }
@@ -370,13 +372,7 @@ function showErrorModal(message) {
 
     esitoModalHeader.style.background = '#dc3545';
     esitoModalHeader.querySelector('h5').textContent = "KO";
-    esitoModalButton.classList.add('btn-SmartOOP-standard');
-
-    if (message.includes("insufficienti") || message.includes("ferie")) {
-        esitoModalButton2.style.display = "inline-block";
-    } else {
-        esitoModalButton2.style.display = "none";
-    }
+    esitoModalButton.classList.add('Smartoop-btn-standard');
 
     const esitoModal = new bootstrap.Modal(document.getElementById('esitoModal'));
     esitoModal.show();
@@ -506,13 +502,30 @@ function showErrorModal(message) {
     const esitoModalButton = document.getElementById("esitoModalButton");
 
     esitoModalBody.textContent = message;
-    esitoModalBody.classList.add('SmartOOP-text-standard');
+    esitoModalBody.classList.add('SmartOOP-text-error');
 
     esitoModalHeader.style.background = '#dc3545';
     esitoModalHeader.querySelector('h5').textContent = "KO";
-    esitoModalButton.classList.add('btn-SmartOOP-standard');
+    esitoModalButton.classList.add('Smartoop-btn-error');
 
     const esitoModal = new bootstrap.Modal(document.getElementById('esitoModal'));
+    esitoModal.show();
+}
+
+function showErrorIns(message) {
+    const esitoModalBody = document.getElementById("esitoModalBodyIns");
+    const esitoModalHeader = document.getElementById("modal-headerIns");
+    const esitoModalButton = document.getElementById("esitoModalButton");
+    const esitoModalButton2 = document.getElementById("esitoModalButton2");
+
+    esitoModalBody.textContent = message;
+    esitoModalBody.classList.add('SmartOOP-text-error');
+
+    esitoModalHeader.style.background = '#dc3545';
+    esitoModalHeader.querySelector('h5').textContent = "ERRATO";
+    esitoModalButton.classList.add('Smartoop-btn-error');
+
+    const esitoModal = new bootstrap.Modal(document.getElementById('esitoModalIns'));
     esitoModal.show();
 }
 

@@ -1,4 +1,4 @@
-package Servlet;
+package Servlet.Utente;
 
 import Entity.Utente;
 import static Utils.Utility.estraiEccezione;

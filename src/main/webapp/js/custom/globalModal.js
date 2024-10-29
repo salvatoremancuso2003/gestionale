@@ -9,6 +9,7 @@ var esito = params.get('esito');
 var codice = params.get('codice');
 var tipo = params.get('tipo');
 var richiesta = params.get('richiestaId');
+var visual = params.get('visual');
 
 if (esito !== null && codice !== null) {
     var esitoModal = new bootstrap.Modal(document.getElementById('esitoModal'));
@@ -326,7 +327,6 @@ if (esito !== null && codice !== null) {
         esitoModalButton.style.color = 'white';
         esitoModal.show();
         redirect();
-
     } else if (esito === 'OK3' && codice === '007') {
         esitoModalBody.textContent = "Utente riabilitato con successo!";
         esitoModalBody.style.color = '#198754';
@@ -349,7 +349,36 @@ if (esito !== null && codice !== null) {
         esitoModalButton.style.color = 'white';
         esitoModal.show();
         redirect();
-    } else if (esito === 'OK' && codice === '008') {
+    } else if (esito === 'OK' & codice === '008') {
+        esitoModalBody.textContent = "Notifica creata con successo";
+        esitoModalBody.classList.add('text-success');
+        esitoModalHeader.style.background = '#198754';
+        esitoModalHeader.style.color = 'white';
+        esitoModalHeader.textContent = "OK";
+        esitoModalButton.classList.add('btn-danger');
+        esitoModal.show();
+        redirect();
+
+    } else if (esito === 'KO' & codice === '008') {
+        visual = true;
+        esitoModalBody.textContent = "Non è stato possibile creare la notifica. Riprova.";
+        esitoModalBody.classList.add('text-danger');
+        esitoModalHeader.style.background = '#dc3545';
+        esitoModalHeader.style.color = 'white';
+        esitoModalHeader.textContent = "ERRATO";
+        esitoModalButton.classList.add('btn-danger');
+        esitoModal.show();
+        redirect();
+    } else if (esito === 'KO' & codice === '009') {
+        esitoModalBody.textContent = "Il richiedente ha superato la sua disponibilità.";
+        esitoModalBody.classList.add('text-danger');
+        esitoModalHeader.style.background = '#dc3545';
+        esitoModalHeader.style.color = 'white';
+        esitoModalHeader.textContent = "ATTENZIONE";
+        esitoModalButton.classList.add('btn-danger');
+        esitoModal.show();
+        redirect();
+    } else if (esito === 'OK' && codice === '010') {
         esitoModalBody.textContent = "Excel generato con successo!";
         esitoModalBody.style.color = '#198754';
         esitoModalHeader.style.background = '#198754';
@@ -360,7 +389,7 @@ if (esito !== null && codice !== null) {
         esitoModalButton.style.color = 'white';
         esitoModal.show();
         redirect();
-    } else if (esito === 'KO' & codice === '008') {
+    } else if (esito === 'KO' & codice === '010') {
         esitoModalBody.textContent = "Non è stato possibile generare l'excel per l'utente selezionato. Riprova.";
         esitoModalBody.style.color = '#dc3545';
         esitoModalHeader.style.background = '#dc3545';
@@ -384,6 +413,7 @@ function redirect() {
         currentUrl.searchParams.delete('codice');
         currentUrl.searchParams.delete('tipo');
         currentUrl.searchParams.delete('richiesta');
+        currentUrl.searchParams.delete('visual');
 
         window.location.href = currentUrl.toString();
     });

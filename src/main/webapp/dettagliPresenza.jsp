@@ -79,11 +79,12 @@
 
                 $('#details_table').DataTable({
                     "ajax": {
-                        "url": "GetDettagliPresenzeServlet",
+                        "url": "SavePresenceServlet",
                         "type": "POST",
                         "data": {
                             "utenteId": userId,
-                            "data": data
+                            "data": data,
+                            "isDetails" : "true"
                         },
                         "dataSrc": "aaData"
                     },

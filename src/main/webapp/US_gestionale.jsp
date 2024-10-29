@@ -196,6 +196,7 @@
 
         <!-- Modal Timbratura -->
         <form method="POST" action="SavePresenceServlet">
+            <input type="hidden" id="isPresence" name="isPresence" value="true">
             <div class="modal fade" id="timbroModal" tabindex="-1" aria-labelledby="timbroModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -305,6 +306,8 @@
                     </div>
                     <div class="modal-body">
                         <form id="richiediPermessoForm" method="POST" action="RichiestaPermessoServlet" enctype="multipart/form-data">
+                            <input type="hidden" id="isCreate" name="isCreate" value="false">
+                            <input type="hidden" id="isCheck" name="isCheck" value="true">
                             <% List <Permesso> AllTipiPermesso = Utility.getAllPermessi();%>
                             <div class="mb-3">
                                 <label for="tipoPermesso" class="form-label">Tipo di Permesso</label>
@@ -397,7 +400,7 @@
             </div>
         </div>
 
-
+        <!-- ESITO MODAL  -->
         <div class="modal fade modal-lg" id="errorDateModal" tabindex="-1" aria-labelledby="errorDateModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -410,6 +413,26 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="errorDateModalButton" class="btn Smartoop-btn-standard" data-bs-dismiss="modal">Chiudi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESITO MODAL INS  -->
+        <div class="modal fade" id="esitoModalIns" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" id="modal-headerIns">
+                        <h5 class="modal-title" id="esitoModalLabelIns">Esito Operazione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="esitoModalBodyIns">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="esitoModalButtonIns" class="btn" data-bs-dismiss="modal">Chiudi</button>
+                        <button type="button" class="btn btn-secondary" id="esitoModalButton2" onclick="invioRichiestaSenzaOre()">Procedi senza modificare ore</button>
+
                     </div>
                 </div>
             </div>

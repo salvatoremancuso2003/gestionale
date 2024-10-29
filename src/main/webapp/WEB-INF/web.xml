@@ -1,100 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    <servlet>
-        <servlet-name>Login</servlet-name>
-        <servlet-class>Servlet.Login</servlet-class>
-    </servlet>
+    
     <servlet>
         <servlet-name>SavePresenceServlet</servlet-name>
-        <servlet-class>Servlet.SavePresenceServlet</servlet-class>
+        <servlet-class>Servlet.Presenze.SavePresenceServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UploadAllegatoServlet</servlet-name>
-        <servlet-class>Servlet.UploadAllegatoServlet</servlet-class>
+        <servlet-name>NotificaServlet</servlet-name>
+        <servlet-class>Servlet.Notifica.NotificaServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>Servlet.Login.LoginServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>VisualizzaAllegatiServlet</servlet-name>
-        <servlet-class>Servlet.VisualizzaAllegatiServlet</servlet-class>
+        <servlet-class>Servlet.Allegato.VisualizzaAllegatiServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDipendentiPresenzaServlet</servlet-name>
-        <servlet-class>Servlet.GetDipendentiPresenzaServlet</servlet-class>
+        <servlet-class>Servlet.Presenze.GetDipendentiPresenzaServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTurniDipendentiServlet</servlet-name>
-        <servlet-class>Servlet.GetTurniDipendentiServlet</servlet-class>
+        <servlet-class>Servlet.Presenze.GetTurniDipendentiServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>Logout</servlet-name>
-        <servlet-class>Servlet.Logout</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>Servlet.LogoutServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DownloadFile</servlet-name>
-        <servlet-class>Servlet.DownloadFile</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetDettagliPresenzeServlet</servlet-name>
-        <servlet-class>Servlet.GetDettagliPresenzeServlet</servlet-class>
-    </servlet>
+    
     <servlet>
         <servlet-name>RichiestaPermessoServlet</servlet-name>
-        <servlet-class>Servlet.RichiestaPermessoServlet</servlet-class>
+        <servlet-class>Servlet.Richiesta.RichiestaPermessoServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDettagliPermessiServlet</servlet-name>
-        <servlet-class>Servlet.GetDettagliPermessiServlet</servlet-class>
+        <servlet-class>Servlet.Richiesta.GetDettagliPermessiServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetRichiesteServlet</servlet-name>
-        <servlet-class>Servlet.GetRichiesteServlet</servlet-class>
+        <servlet-class>Servlet.Richiesta.GetRichiesteServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>CreaNotifica</servlet-name>
-        <servlet-class>Servlet.CreaNotifica</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetNotificheServlet</servlet-name>
-        <servlet-class>Servlet.GetNotificheServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SegnaComeLettoServlet</servlet-name>
-        <servlet-class>Servlet.SegnaComeLettoServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CheckOreDisponibiliServlet</servlet-name>
-        <servlet-class>Servlet.CheckOreDisponibiliServlet</servlet-class>
-    </servlet>
+    
     <servlet>
         <servlet-name>RichiestaPermessoServlet2</servlet-name>
         <servlet-class>Servlet.RichiestaPermessoServlet2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>InserisciNuovoUtente</servlet-name>
-        <servlet-class>Servlet.InserisciNuovoUtente</servlet-class>
+        <servlet-class>Servlet.Utente.InserisciNuovoUtente</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetUtenteServlet</servlet-name>
-        <servlet-class>Servlet.GetUtenteServlet</servlet-class>
+        <servlet-class>Servlet.Utente.GetUtenteServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetNotificheServlet</servlet-name>
+        <servlet-class>Servlet.Notifica.GetNotificheServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AllegatoServlet</servlet-name>
+        <servlet-class>Servlet.Allegato.AllegatoServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>EstraiExcel</servlet-name>
-        <servlet-class>Servlet.EstraiExcel</servlet-class>
+        <servlet-class>Servlet.Utente.EstraiExcel</servlet-class>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>Login</servlet-name>
-        <url-pattern>/Login</url-pattern>
-    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SavePresenceServlet</servlet-name>
         <url-pattern>/SavePresenceServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UploadAllegatoServlet</servlet-name>
-        <url-pattern>/UploadAllegatoServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>VisualizzaAllegatiServlet</servlet-name>
@@ -108,22 +79,8 @@
         <servlet-name>GetTurniDipendentiServlet</servlet-name>
         <url-pattern>/GetTurniDipendentiServlet</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Logout</servlet-name>
-        <url-pattern>/Logout</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>LogoutServlet</servlet-name>
-        <url-pattern>/LogoutServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DownloadFile</servlet-name>
-        <url-pattern>/DownloadFile</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetDettagliPresenzeServlet</servlet-name>
-        <url-pattern>/GetDettagliPresenzeServlet</url-pattern>
-    </servlet-mapping>
+    
+    
     <servlet-mapping>
         <servlet-name>RichiestaPermessoServlet</servlet-name>
         <url-pattern>/RichiestaPermessoServlet</url-pattern>
@@ -133,25 +90,18 @@
         <url-pattern>/GetDettagliPermessiServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>NotificaServlet</servlet-name>
+        <url-pattern>/NotificaServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetRichiesteServlet</servlet-name>
         <url-pattern>/GetRichiesteServlet</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreaNotifica</servlet-name>
-        <url-pattern>/CreaNotifica</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetNotificheServlet</servlet-name>
-        <url-pattern>/GetNotificheServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SegnaComeLettoServlet</servlet-name>
-        <url-pattern>/SegnaComeLettoServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CheckOreDisponibiliServlet</servlet-name>
-        <url-pattern>/CheckOreDisponibiliServlet</url-pattern>
-    </servlet-mapping>
+    
     <servlet-mapping>
         <servlet-name>RichiestaPermessoServlet2</servlet-name>
         <url-pattern>/RichiestaPermessoServlet2</url-pattern>
@@ -163,6 +113,14 @@
     <servlet-mapping>
         <servlet-name>GetUtenteServlet</servlet-name>
         <url-pattern>/GetUtenteServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetNotificheServlet</servlet-name>
+        <url-pattern>/GetNotificheServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AllegatoServlet</servlet-name>
+        <url-pattern>/AllegatoServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EstraiExcel</servlet-name>

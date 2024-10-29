@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Servlet;
+package Servlet.Richiesta;
 
 import Entity.FileEntity;
 import Entity.InfoTrack;
@@ -16,6 +16,7 @@ import Enum.Tipo_documento_enum;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
+import com.google.gson.Gson;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -33,7 +34,9 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFPictureData;
@@ -52,6 +55,24 @@ public class RichiestaPermessoServlet extends HttpServlet {
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        boolean isCreate = Boolean.parseBoolean(request.getParameter("isCreate"));
+        boolean isCheck = Boolean.parseBoolean(request.getParameter("isCheck"));
+
+        try {
+            if (isCreate == true) {
+                creaRichiesta(request, response);
+            }else if (isCheck == true) {
+                checkOreDisponibili(request, response);
+            }
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    protected void creaRichiesta(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         EntityManager em = emf.createEntityManager();
@@ -112,7 +133,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
                             + "(:dataInizio BETWEEN r.data_inizio AND r.data_fine OR :dataFine BETWEEN r.data_inizio AND r.data_fine "
                             + "OR r.data_inizio BETWEEN :dataInizio AND :dataFine OR r.data_fine BETWEEN :dataInizio AND :dataFine)", Long.class)
                             .setParameter("utente", utente)
-                            .setParameter("giornaliero", Si_no_enum.NO) 
+                            .setParameter("giornaliero", Si_no_enum.NO)
                             .setParameter("dataInizio", new Timestamp(dataInizio.getTime()))
                             .setParameter("dataFine", new Timestamp(finalDate.getTime()))
                             .getSingleResult();
@@ -247,10 +268,118 @@ public class RichiestaPermessoServlet extends HttpServlet {
                 entityManagerFactory.close();
             }
         }
-
     }
 
+    // Calcola i giorni richiesti escludendo i weekend
+    private long calcolaGiorniRichiestiEscludendoWeekend(Date dataInizio, Date dataFine) {
+        Calendar start = Calendar.getInstance();
+        start.setTime(dataInizio);
+        Calendar end = Calendar.getInstance();
+        end.setTime(dataFine);
+
+        long giorniRichiesti = 0;
+
+        while (!start.after(end)) {
+            int dayOfWeek = start.get(Calendar.DAY_OF_WEEK);
+            if (dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY) {
+                giorniRichiesti++; // Conta solo se non è un weekend
+            }
+            start.add(Calendar.DATE, 1);
+        }
+
+        return giorniRichiesti;
+    }
+
+    protected void checkOreDisponibili(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            EntityManager em = Persistence.createEntityManagerFactory("gestionale").createEntityManager();
+
+            String tipoPermessoStr = request.getParameter("tipo_permesso");
+            String dataInizioStr = request.getParameter("data_inizio");
+            String dataFineStr = request.getParameter("data_fine");
+
+            if (tipoPermessoStr == null || dataInizioStr == null || dataFineStr == null) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\":\"Parametri mancanti.\"}");
+                return;
+            }
+
+            Utente utente = (Utente) request.getSession().getAttribute("user");
+            if (utente == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\":\"Utente non autenticato.\"}");
+                return;
+            }
+
+            Permesso permesso = em.createQuery("SELECT p FROM Permesso p WHERE p.codice = :codice", Permesso.class)
+                    .setParameter("codice", Long.valueOf(tipoPermessoStr))
+                    .getSingleResult();
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+
+            Date dataInizio;
+            Date dataFine;
+
+            if (permesso.getCodice() == 3) { // Permesso a ore
+                dataInizio = dateTimeFormat.parse(dataInizioStr);
+                dataFine = dateTimeFormat.parse(dataFineStr);
+            } else { // Permesso a giorni
+                dataInizio = dateFormat.parse(dataInizioStr);
+                dataFine = dateFormat.parse(dataFineStr);
+            }
+
+            long oreRichieste = Utility.calcolaOreRichieste(dataInizio, dataFine);
+            long giorniRichiesti = calcolaGiorniRichiestiEscludendoWeekend(dataInizio, dataFine); // Modifica qui
+
+            long oreDisponibili = utente.getOre_disponibili();
+            int ferieDisponibili = utente.getFerie_disponibili();
+
+            boolean permessoApprovato = false;
+            String messaggio = "";
+
+            if (permesso.getCodice() == 1) { // Ferie
+                if (ferieDisponibili >= giorniRichiesti) {
+                    permessoApprovato = true;
+                } else {
+                    messaggio = "Ferie insufficienti. Disponibili: " + ferieDisponibili + " giorni.";
+                }
+            } else if (permesso.getCodice() == 3) { // Ore
+                if (oreDisponibili >= oreRichieste) {
+                    permessoApprovato = true;
+                } else {
+                    messaggio = "Ore insufficienti. Disponibili: " + oreDisponibili + " ore.";
+                }
+            } else if (permesso.getCodice() == 2) { // Altro tipo di permesso
+                permessoApprovato = true;
+            } else {
+                messaggio = "Tipo di permesso non valido.";
+            }
+
+            String jsonResponse;
+            if (permessoApprovato) {
+                jsonResponse = new Gson().toJson(Map.of(
+                        "success", true,
+                        "message", "Permesso approvato"
+                ));
+            } else {
+                jsonResponse = new Gson().toJson(Map.of(
+                        "success", false,
+                        "message", messaggio
+                ));
+            }
+            response.getWriter().write(jsonResponse);
+
+        } catch (Exception e) {
+            logfile.severe(Utility.estraiEccezione(e));
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\":\"Errore durante il calcolo delle disponibilità.\"}");
+        }
+    }
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *

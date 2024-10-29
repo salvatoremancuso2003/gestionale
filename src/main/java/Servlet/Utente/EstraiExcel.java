@@ -1,4 +1,4 @@
-package Servlet;
+package Servlet.Utente;
 
 import Entity.Presenza;
 import Entity.Richiesta;

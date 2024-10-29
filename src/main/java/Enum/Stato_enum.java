@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author Salvatore
  */
 public enum Stato_enum implements Serializable {
-    OK,
-    KO,
+    APPROVATA,
+    RIGETTATA,
     IN_ATTESA;
 }

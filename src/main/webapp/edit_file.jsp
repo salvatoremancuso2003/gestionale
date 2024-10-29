@@ -71,8 +71,9 @@
         %>
         <div class="container mt-5">
             <h2 class="mb-4 text-center SmartOOP-text-standard" style="font-weight: bold">Modifica File</h2>
-            <form action="UploadAllegatoServlet" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form action="AllegatoServlet" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <input type="hidden" value="true" name="edit">
+                <input type="hidden" value="true" name="isUpload">
                 <input type="hidden" value="<%= fileEntity != null ? fileEntity.getId() : "" %>" name="id">
                 <input type="hidden" value="<%= fancybox.equals("true") ? "true" : "false" %>" name="fancybox">
                 <div class="mb-3">
@@ -110,9 +111,9 @@
                                     var richiestaId = "<%= richiestaId %>";
                                     if (data.fancybox === 'true') {
                                         if (data.success) {
-                                           window.location.href = 'dettagliPermesso.jsp?richiestaId=' + richiestaId + '&esito=OK&codice=003';
+                                            window.location.href = 'dettagliPermesso.jsp?richiestaId=' + richiestaId + '&esito=OK&codice=003';
                                         } else {
-                                           window.location.href = 'dettagliPermesso.jsp?richiestaId=' + richiestaId + '&esito=KO&codice=003';
+                                            window.location.href = 'dettagliPermesso.jsp?richiestaId=' + richiestaId + '&esito=KO&codice=003';
                                         }
                                     } else {
                                         if (data.success) {

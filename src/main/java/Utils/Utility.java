@@ -958,7 +958,7 @@ public class Utility {
                     + "OR (r.data_inizio <= :startOfMonth AND r.data_fine >= :endOfMonth))",
                     Richiesta.class)
                     .setParameter("userId", userId)
-                    .setParameter("stato", Stato_enum.OK)
+                    .setParameter("stato", Stato_enum.APPROVATA)
                     .setParameter("startOfMonth", startOfMonth)
                     .setParameter("endOfMonth", endOfMonth);
 

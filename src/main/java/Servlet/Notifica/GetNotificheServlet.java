@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Servlet;
+package Servlet.Notifica;
 
 import Entity.Notifica;
 import Entity.Utente;
@@ -57,13 +57,12 @@ public class GetNotificheServlet extends HttpServlet {
                         .setParameter("utente", utente)
                         .getResultList();
                 JsonObject jsonResponse = new JsonObject();
-                
-                if(notifiche.isEmpty()){
+
+                if (notifiche.isEmpty()) {
                     jsonResponse.addProperty("noData", true);
-                }else{
+                } else {
                     jsonResponse.addProperty("noData", false);
                 }
-                
 
                 JsonArray dataArray = new JsonArray();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -80,7 +79,6 @@ public class GetNotificheServlet extends HttpServlet {
 
                 int totalNotifiche = notifiche.size();
 
-                
                 jsonResponse.addProperty("totalNotifiche", totalNotifiche);
                 jsonResponse.addProperty("noData", false);
                 jsonResponse.add("aaData", dataArray);

@@ -22,7 +22,8 @@
                             <div class="text-center mb-4">
                                 <img src="assets/logo.png" class="img-fluid responsive-img" alt="Logo SmartOOP">
                             </div>
-                            <form method="POST" action="Login" id="login_form">
+                            <form method="POST" action="LoginServlet" id="login_form">
+                                <input type="hidden" id="isLogin" name="isLogin" value="true">
                                 <h2 class="SmartOOP-text-standard text-center" style="font-weight: bold">Effettua il login</h2>
                                 <br>
                                 <!-- Email input -->

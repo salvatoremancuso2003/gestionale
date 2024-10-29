@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Servlet;
+package Servlet.Richiesta;
 
 import Entity.Richiesta;
 import Entity.Utente;
@@ -84,23 +84,25 @@ public class GetDettagliPermessiServlet extends HttpServlet {
                             + "<div class='row'>"
                             + "<div class='d-flex'>"
                             + "<div class='col-auto'>"
-                            + "<form action='DownloadFile' method='POST' target='_blank'>"
+                            + "<form action='AllegatoServlet' method='POST' target='_blank'>"
+                            + "<input type='hidden' name='isDownload' value='true' />"
                             + "<input type = 'hidden' name='filename' value='" + richiesta.getAllegato().getFilename() + "' />"
-                            + "<button class='btn btn-SmartOOP-standard' style='min-width: 100px;'>Scarica File</button>"
+                            + "<button class='btn Smartoop-btn-standard' style='min-width: 100px;'>Scarica File</button>"
                             + "</form>"
                             + "</div>";
 
-//                    String editForm = "<hr> <button class='btn btn-SmartOOP-standard' style='padding: 10px' "
+//                    String editForm = "<hr> <button class='btn btn-danger' style='padding: 10px' "
 //                            + "onclick=\"$.fancybox.close(); window.location.href='edit_file.jsp?id=" + richiesta.getAllegato().getId() + "';\">"
 //                            + "Modifica File</button>";
                     String deleteForm
                             = "<div class='col-auto'>"
-                            + "<form id=\"deleteForm\" action='DownloadFile' method='POST' onsubmit=\"closeFancyboxAndSubmit(event)\">\n"
+                            + "<form id=\"deleteForm\" action='AllegatoServlet' method='POST' onsubmit=\"closeFancyboxAndSubmit(event)\">\n"
+                            + "<input type='hidden' name='isDownload' value='true' />"
                             + "    <input type=\"hidden\" name=\"filename\" value=\"" + richiesta.getAllegato().getFilename() + "\" />\n"
                             + "    <input type=\"hidden\" name=\"id\" value=\"" + richiesta.getAllegato().getId() + "\" />\n"
                             + "    <input type=\"hidden\" name=\"idRichiesta\" value=\"" + richiesta.getId() + "\" />\n"
                             + "    <input type=\"hidden\" name=\"delete\" value=\"true\" />\n"
-                            + "    <button class='btn btn-SmartOOP-standard' style='min-width: 100px; margin-left: 5px;'>Elimina File</button>\n"
+                            + "    <button class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px;'>Elimina File</button>\n"
                             + "</form>"
                             + "</div>";
 
@@ -118,14 +120,15 @@ public class GetDettagliPermessiServlet extends HttpServlet {
                             + "<div class='row'>"
                             + "<div class='d-flex'>"
                             + "<div class='col-auto'>"
-                            + "<form action='DownloadFile' method='POST' target='_blank'>"
+                            + "<form action='AllegatoServlet' method='POST' target='_blank'>"
+                            + "<input type='hidden' name='isDownload' value='true' />"
                             + "<input type = 'hidden' name='filename' value='" + richiesta.getAllegato().getFilename() + "' />"
-                            + "<button class='btn btn-SmartOOP-standard' style='min-width: 100px;'>Scarica File</button>"
+                            + "<button class='btn Smartoop-btn-standard' style='min-width: 100px;'>Scarica File</button>"
                             + "</form>"
                             + "</div>";
 
                     String editForm = "<div class='col-auto'>"
-                            + "<button class='btn btn-SmartOOP-standard' style='min-width: 100px; margin-left: 5px;'"
+                            + "<button class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px;'"
                             + "onclick=\"$.fancybox.close(); window.location.href='edit_file.jsp?id=" + richiesta.getAllegato().getId() + "&richiestaId=" + richiesta.getId() + "&fancybox=true';\">"
                             + "Modifica File</button>"
                             + "</div>";

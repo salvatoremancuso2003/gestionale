@@ -143,7 +143,8 @@
                     </div>
                     <div class="modal-body">
                         <!-- Form per l'upload del file -->
-                        <form action="UploadAllegatoServlet" method="post" enctype="multipart/form-data">
+                        <form action="AllegatoServlet" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="isUpload" value="true" />
                             <% List <Utente> utenti = Utility.getAllUtenti(); %>
 
                             <!-- Select per scegliere l'utente destinatario -->

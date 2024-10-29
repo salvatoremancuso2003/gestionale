@@ -5,5 +5,7 @@
 
 
 function logout() {
-    window.location.href = "LogoutServlet";
+    var isLogin = false;
+    window.location.href = "LoginServlet?isLogin=" + isLogin;
+
 }

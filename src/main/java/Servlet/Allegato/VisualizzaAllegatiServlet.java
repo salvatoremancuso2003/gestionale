@@ -1,4 +1,4 @@
-package Servlet;
+package Servlet.Allegato;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -112,8 +112,9 @@ public class VisualizzaAllegatiServlet extends HttpServlet {
                             + "<div class='row'>"
                             + "<div class='d-flex'>"
                             + "<div class='col-auto'>"
-                            + "<form action='DownloadFile' method='POST' target='_blank'>"
-                            + "<input type = 'hidden' name='filename' value='" + e.getFilename() + "' />"
+                            + "<form action='AllegatoServlet' method='POST' target='_blank'>"
+                            + "<input type='hidden' name='filename' value='" + e.getFilename() + "' />"
+                            + "<input type='hidden' name='isDownload' value='true' />"
                             + "<button class='btn Smartoop-btn-standard'>Scarica File</button>"
                             + "</form>"
                             + "</div>";
@@ -234,8 +235,9 @@ public class VisualizzaAllegatiServlet extends HttpServlet {
                         + "<div class='row'>"
                         + "<div class='d-flex'>"
                         + "<div class='col-auto'>"
-                        + "<form action='DownloadFile' method='POST' target='_blank'>"
+                        + "<form action='AllegatoServlet' method='POST' target='_blank'>"
                         + "<input type = 'hidden' name='filename' value='" + e.getFilename() + "' />"
+                        + "<input type='hidden' name='isDownload' value='true' />"
                         + "<button class='btn Smartoop-btn-standard' style='min-width: 100px;'>Scarica File</button>"
                         + "</form>"
                         + "</div>";
@@ -248,14 +250,15 @@ public class VisualizzaAllegatiServlet extends HttpServlet {
 //                        + "<input type = 'hidden' name='id' value='" + e.getId() + "' />"
 //                        + "<input type = 'hidden' name='edit' value='" + true + "' />"
 //                        + "<hr>"
-//                        + "<button class='btn btn-SmartOOP-standard' style='padding: 10px' >Modifica File</button>"
+//                        + "<button class='btn btn-danger' style='padding: 10px' >Modifica File</button>"
 //                        + "</form>";
-                deleteForm = 
-                        "<div class='col-auto'>"
-                        + "<form action='DownloadFile' method='POST'>"
+                deleteForm
+                        = "<div class='col-auto'>"
+                        + "<form action='AllegatoServlet' method='POST'>"
                         + "<input type = 'hidden' name='filename' value='" + e.getFilename() + "' />"
                         + "<input type = 'hidden' name='id' value='" + e.getId() + "' />"
                         + "<input type = 'hidden' name='delete' value='" + true + "' />"
+                        + "<input type = 'hidden' name='isDownload' value='" + true + "' />"
                         + "<button class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px;' >Elimina File</button>"
                         + "</form>"
                         + "</div>";
