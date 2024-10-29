@@ -1,0 +1,84 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 5 set 2024, 11:27:43
+    Author     : Salvatore
+*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Cambria", serif;
+    font-size: 1.0rem;
+}
+body, html {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    padding-top: 70px;
+}
+main {
+    flex: 1;
+}
+#calendar {
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+.navbar-brand, .nav-link, footer p {
+    color: #ffffff !important;
+}
+footer {
+    color: #ffffff;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    margin-top: auto;
+}
+
+.responsive-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 150px;
+    object-fit: contain;
+}
+
+.form-check-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.active{
+    border-bottom: 2px solid white;
+}
+
+.fc-button-primary{
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+.fc-button-primary:hover{
+    color: #fff !important;
+    background-color: #0b5ed7 !important;
+    border-color:  #0a58ca !important;
+}
+.fc-button-primary:active{
+    color: #fff !important;
+    background-color: #0a58ca !important;
+    border-color:  #0a53be !important;
+}
+.fc-button-primary:disabled{
+    color: #fff !important;
+    background-color: #0d6efd !important;
+    border-color:  #0d6efd !important;
+}
+.form-check-input {
+    position: absolute;
+    opacity: 100;
+    cursor: pointer;
+}

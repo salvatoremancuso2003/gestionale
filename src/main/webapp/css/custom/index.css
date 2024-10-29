@@ -1,0 +1,46 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 5 set 2024, 11:30:25
+    Author     : Salvatore
+*/
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Cambria", serif;
+    font-size: 1.0rem;
+}
+
+.responsive-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 125px;
+    object-fit: contain;
+}
+
+body, html {
+    height: 100%;
+}
+
+.container-fluid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.text-center h2 {
+    margin-bottom: 1rem;
+}
+
+
+
