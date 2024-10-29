@@ -1,0 +1,106 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 5 set 2024, 11:27:43
+    Author     : Salvatore
+*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Cambria", serif;
+    font-size: 1.0rem;
+}
+body, html {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    padding-top: 70px;
+}
+main {
+    flex: 1;
+}
+#calendar {
+    max-width: 900px;
+    margin: 40px auto;
+}
+#calendar button {
+    background-color: #dc3545 !important;
+    border: #dc3545;
+}
+#calendar a {
+    color: #dc3545 !important;
+}
+.navbar, footer {
+    background-color: #dc3545;
+}
+.navbar-brand, .nav-link, footer p {
+    color: #ffffff !important;
+}
+footer {
+    color: #ffffff;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    margin-top: auto;
+}
+.modal-header {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+.responsive-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 150px;
+    object-fit: contain;
+}
+.card {
+    box-shadow: 0 4px 15px rgba(220,53,69, 0.3);
+}
+
+.form-check-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.form-check-input:checked ~ .form-check-label::before {
+    background-color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.form-check-label::before {
+    content: "";
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    border: 2px solid #dc3545;
+    border-radius: 50%;
+    vertical-align: middle;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.form-check-input:checked ~ .form-check-label::before {
+    background-color: #dc3545;
+}
+
+.form-check-input:focus ~ .form-check-label::before {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.active{
+    border-bottom: 2px solid white;
+}
+
+
+
+
+
+
