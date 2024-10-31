@@ -381,7 +381,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="esitoModal" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
+        <div class="modal fade modal-lg" id="esitoModal" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header" id="modal-header">
@@ -399,7 +399,7 @@
         </div>
 
         <!-- ESITO MODAL INS  -->
-        <div class="modal fade" id="esitoModalIns" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
+        <div class="modal fade modal-lg" id="esitoModalIns" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header" id="modal-headerIns">
@@ -410,9 +410,26 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="esitoModalButtonIns" class="btn" data-bs-dismiss="modal">Chiudi</button>
-                        <button type="button" class="btn btn-secondary" id="esitoModalButton2" onclick="invioRichiestaSenzaOre()">Procedi senza modificare ore</button>
+                        <button type="button" id="esitoModalButtonIns" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                        <button type="button" class="btn Smartoop-btn-outline-success" id="esitoModalButton2" onclick="invioRichiestaSenzaOre()">Procedi senza modificare ore</button>
 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade modal-lg" id="errorDateModal" tabindex="-1" aria-labelledby="errorDateModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header Smartoop-bg-standard" id="modal-header">
+                        <h5 class="modal-title" id="errorDateModalLabel" style="color: white">Operazione non disponibile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="esitoModalBody">
+                        Non puoi selezionare sabato o domenica. Riprova.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="errorDateModalButton" class="btn Smartoop-btn-standard" data-bs-dismiss="modal">Chiudi</button>
                     </div>
                 </div>
             </div>

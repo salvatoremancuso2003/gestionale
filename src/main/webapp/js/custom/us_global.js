@@ -371,8 +371,9 @@ function showErrorModal(message) {
     esitoModalBody.classList.add('SmartOOP-text-standard');
 
     esitoModalHeader.style.background = '#dc3545';
-    esitoModalHeader.querySelector('h5').textContent = "KO";
-    esitoModalButton.classList.add('Smartoop-btn-standard');
+    esitoModalHeader.style.color = 'white';
+    esitoModalHeader.querySelector('h5').textContent = "Operazione non andata a buon fine!";
+    esitoModalButton.classList.add('Smartoop-btn-danger');
 
     const esitoModal = new bootstrap.Modal(document.getElementById('esitoModal'));
     esitoModal.show();
@@ -471,11 +472,19 @@ document.getElementById("richiediPermessoForm").addEventListener("submit", funct
     const tipoPermesso = document.getElementById("tipoPermesso").value;
     const dataInizio = document.getElementById("dataInizio").value;
     const dataFine = document.getElementById("dataFine").value;
+
+
+    document.getElementById("isCheck").value = "true";
+    document.getElementById("isCreate").value = "false";
+
+
     const formData = new URLSearchParams();
     formData.append("tipo_permesso", tipoPermesso);
     formData.append("data_inizio", dataInizio);
     formData.append("data_fine", dataFine);
-    fetch("CheckOreDisponibiliServlet", {
+    formData.append("isCheck", "true");
+
+    fetch("RichiestaPermessoServlet", {
         method: "POST",
         body: formData
     })
@@ -486,16 +495,23 @@ document.getElementById("richiediPermessoForm").addEventListener("submit", funct
                 return response.json();
             })
             .then(data => {
+                console.log("Risposta del servlet:", data); // Debug per vedere la risposta del servlet
+
                 if (data.success) {
+                    // Cambia isCreate a true per la creazione della richiesta
+                    document.getElementById("isCheck").value = "false";
+                    document.getElementById("isCreate").value = "true";
                     document.getElementById("richiediPermessoForm").submit();
                 } else {
-                    showErrorModal(data.message);
+                    showErrorIns(data.message); // Mostra il messaggio di errore
                 }
             })
             .catch(error => {
-                showErrorModal(("Errore durante la verifica delle ore disponibili."));
+                showErrorModal("Errore durante la verifica delle ore disponibili.");
+                console.error("Errore:", error); // Debug per eventuali errori
             });
 });
+
 function showErrorModal(message) {
     const esitoModalBody = document.getElementById("esitoModalBody");
     const esitoModalHeader = document.getElementById("modal-header");
@@ -505,7 +521,8 @@ function showErrorModal(message) {
     esitoModalBody.classList.add('SmartOOP-text-error');
 
     esitoModalHeader.style.background = '#dc3545';
-    esitoModalHeader.querySelector('h5').textContent = "KO";
+    esitoModalHeader.style.color = 'white';
+    esitoModalHeader.querySelector('h5').textContent = "Operazione non andata a buon fine!";
     esitoModalButton.classList.add('Smartoop-btn-error');
 
     const esitoModal = new bootstrap.Modal(document.getElementById('esitoModal'));
@@ -519,10 +536,11 @@ function showErrorIns(message) {
     const esitoModalButton2 = document.getElementById("esitoModalButton2");
 
     esitoModalBody.textContent = message;
-    esitoModalBody.classList.add('SmartOOP-text-error');
+    //esitoModalBody.classList.add('text-warning');
 
-    esitoModalHeader.style.background = '#dc3545';
-    esitoModalHeader.querySelector('h5').textContent = "ERRATO";
+    esitoModalHeader.style.background = '#ffc107';
+    esitoModalHeader.style.color = 'white';
+    esitoModalHeader.querySelector('h5').textContent = "Attenzione!";
     esitoModalButton.classList.add('Smartoop-btn-error');
 
     const esitoModal = new bootstrap.Modal(document.getElementById('esitoModalIns'));

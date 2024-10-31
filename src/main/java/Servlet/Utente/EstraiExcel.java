@@ -260,7 +260,7 @@ public class EstraiExcel extends HttpServlet {
                     // Controlla se il giorno corrente rientra nel range di richiesta
                     if (!giorno.isBefore(dataInizio) && !giorno.isAfter(dataFine)) {
                         Row rowPermesso;
-                        String tipoPermesso = richiesta.getTipo_permesso().getDescrizione(); // Assumendo che `getTipoPermesso` ritorni una stringa come "Malattia" o "Ferie"
+                        String tipoPermesso = richiesta.getTipo_permesso().getDescrizione();
 
                         if (tipoPermesso.equalsIgnoreCase("Malattia") || tipoPermesso.equalsIgnoreCase("Permesso_studio")) {
                             rowPermesso = sheet.getRow(6);
