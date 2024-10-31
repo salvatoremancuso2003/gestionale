@@ -333,6 +333,7 @@ public class AllegatoServlet extends HttpServlet {
                 fileEntity.setUser(utente);
                 fileEntity.setDescription(note);
                 fileEntity.setType(tipoDocumento);
+                fileEntity.setStatus(1);
 
                 if (fileName.endsWith(".pdf")) {
                     PDDocument document = PDDocument.load(file);

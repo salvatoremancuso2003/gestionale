@@ -1,9 +1,14 @@
 package Servlet.Utente;
 
+import Entity.FileEntity;
 import Entity.Presenza;
 import Entity.Richiesta;
 import Entity.Utente;
 import Utils.Utility;
+import static Utils.Utility.estraiEccezione;
+import static Utils.Utility.findOriginalExcelFile;
+import static Utils.Utility.logfile;
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServlet;
@@ -50,11 +55,20 @@ public class EstraiExcel extends HttpServlet {
         String dataExcel = request.getParameter("data");
         String userId = request.getParameter("userId");
 
-        File originalFile = new File("C:/Users/Salvatore/Desktop/VUOTO.xlsx");
-        File tempFile = new File("C:/Users/Salvatore/Desktop/COPIA_VUOTO.xlsx");
-        Files.copy(originalFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ITALY);
+        FileEntity file = findOriginalExcelFile();
+        File originalFile = new File(file.getFilepath());
+        String tempFilePath = "COPIA_" + originalFile.getName();
+        File tempFile = new File(originalFile.getParent(), tempFilePath);
 
+        if (!tempFile.exists()) {
+            try {
+                Files.copy(originalFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                logfile.severe(estraiEccezione(e));
+            }
+        }
+
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ITALY);
         LocalDate primoGiorno = LocalDate.parse(dataExcel + "-01");
 
         try (FileInputStream fis = new FileInputStream(tempFile); Workbook workbook = new XSSFWorkbook(fis)) {

@@ -17,7 +17,7 @@ import jakarta.persistence.*;
     ),
     @NamedQuery(
             name = "FileEntity.findAll",
-            query = "SELECT f FROM FileEntity f"
+            query = "SELECT f FROM FileEntity f "
     ),
     @NamedQuery(
             name = "FileEntity.findByUser",
@@ -53,7 +53,8 @@ public class FileEntity implements Serializable {
     @Column(name = "file_content", columnDefinition = "LONGBLOB")
     private byte[] fileContent;
 
-    //private int status;
+    
+    private int status;
     @ManyToOne
     private Utente utente;
 
@@ -181,4 +182,14 @@ public class FileEntity implements Serializable {
         this.utente = utente;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    
+    
 }

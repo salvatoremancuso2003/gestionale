@@ -64,7 +64,7 @@ public class VisualizzaAllegatiServlet extends HttpServlet {
 
             } else {
 
-                StringBuilder queryBuilder = new StringBuilder("SELECT f FROM FileEntity f WHERE 1=1");
+                StringBuilder queryBuilder = new StringBuilder("SELECT f FROM FileEntity f WHERE 1=1 and f.status= 1");
 
                 if (dataInizioFiltro != null && !dataInizioFiltro.isEmpty()) {
                     queryBuilder.append(" AND f.uploadDate >= :dataInizio");
@@ -169,7 +169,7 @@ public class VisualizzaAllegatiServlet extends HttpServlet {
             String dataFine = request.getParameter("dataFine");
             String utenteId = request.getParameter("utente");
             String tipoDocumento = request.getParameter("tipoDocumentoFiltro");
-            StringBuilder queryBuilder = new StringBuilder("SELECT f FROM FileEntity f WHERE 1=1");
+            StringBuilder queryBuilder = new StringBuilder("SELECT f FROM FileEntity f WHERE 1=1 and f.status= 1");
 
             if (dataInizio != null && !dataInizio.isEmpty()) {
                 queryBuilder.append(" AND f.uploadDate >= :dataInizio");

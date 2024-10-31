@@ -278,6 +278,30 @@ public class Utility {
         return null;
     }
 
+    public static FileEntity findOriginalExcelFile() {
+        EntityManagerFactory entityManagerFactory = null;
+        EntityManager entityManager = null;
+
+        try {
+            entityManagerFactory = Persistence.createEntityManagerFactory("gestionale");
+            entityManager = entityManagerFactory.createEntityManager();
+
+            FileEntity fileEntity = entityManager.find(FileEntity.class, 1L);
+            return fileEntity;
+
+        } catch (Exception e) {
+            logfile.severe(estraiEccezione(e));
+            return null;
+        } finally {
+            if (entityManager != null) {
+                entityManager.close();
+            }
+            if (entityManagerFactory != null) {
+                entityManagerFactory.close();
+            }
+        }
+    }
+
     public static List<Utente> getAllUtenti() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
