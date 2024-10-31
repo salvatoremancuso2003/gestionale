@@ -495,20 +495,17 @@ document.getElementById("richiediPermessoForm").addEventListener("submit", funct
                 return response.json();
             })
             .then(data => {
-                console.log("Risposta del servlet:", data); // Debug per vedere la risposta del servlet
-
                 if (data.success) {
                     // Cambia isCreate a true per la creazione della richiesta
                     document.getElementById("isCheck").value = "false";
                     document.getElementById("isCreate").value = "true";
                     document.getElementById("richiediPermessoForm").submit();
                 } else {
-                    showErrorIns(data.message); // Mostra il messaggio di errore
+                    showErrorIns(data.message);
                 }
             })
             .catch(error => {
                 showErrorModal("Errore durante la verifica delle ore disponibili.");
-                console.error("Errore:", error); // Debug per eventuali errori
             });
 });
 
