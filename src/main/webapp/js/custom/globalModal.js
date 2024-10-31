@@ -355,7 +355,7 @@ if (esito !== null && codice !== null) {
         esitoModalHeader.style.background = '#198754';
         esitoModalHeader.style.color = 'white';
         esitoModalHeader.textContent = "OK";
-        esitoModalButton.classList.add('btn-danger');
+        esitoModalButton.classList.add('btn-success');
         esitoModal.show();
         redirect();
 
@@ -366,7 +366,7 @@ if (esito !== null && codice !== null) {
         esitoModalHeader.style.background = '#dc3545';
         esitoModalHeader.style.color = 'white';
         esitoModalHeader.textContent = "ERRATO";
-        esitoModalButton.classList.add('btn-danger');
+        esitoModalButton.classList.add('Smartoop-btn-error');
         esitoModal.show();
         redirect();
     } else if (esito === 'KO' & codice === '009') {
@@ -375,7 +375,7 @@ if (esito !== null && codice !== null) {
         esitoModalHeader.style.background = '#dc3545';
         esitoModalHeader.style.color = 'white';
         esitoModalHeader.textContent = "ATTENZIONE";
-        esitoModalButton.classList.add('btn-danger');
+        esitoModalButton.classList.add('Smartoop-btn-error');
         esitoModal.show();
         redirect();
     } else if (esito === 'OK' && codice === '010') {

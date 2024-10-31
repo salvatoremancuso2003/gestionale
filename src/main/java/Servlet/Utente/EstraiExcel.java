@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -25,11 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -50,8 +53,9 @@ public class EstraiExcel extends HttpServlet {
         File originalFile = new File("C:/Users/Salvatore/Desktop/VUOTO.xlsx");
         File tempFile = new File("C:/Users/Salvatore/Desktop/COPIA_VUOTO.xlsx");
         Files.copy(originalFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ITALY);
-        LocalDate primoGiorno = LocalDate.parse(dataExcel, formatter);
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ITALY);
+
+        LocalDate primoGiorno = LocalDate.parse(dataExcel + "-01");
 
         try (FileInputStream fis = new FileInputStream(tempFile); Workbook workbook = new XSSFWorkbook(fis)) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -246,7 +250,6 @@ public class EstraiExcel extends HttpServlet {
                         }
 
                     }
-
                 } else {
                     cell.setCellStyle(normalDayStyle);
                 }
@@ -262,44 +265,63 @@ public class EstraiExcel extends HttpServlet {
                         Row rowPermesso;
                         String tipoPermesso = richiesta.getTipo_permesso().getDescrizione();
 
-                        if (tipoPermesso.equalsIgnoreCase("Malattia") || tipoPermesso.equalsIgnoreCase("Permesso_studio")) {
+                        if (tipoPermesso.equalsIgnoreCase("Malattia")) {
                             rowPermesso = sheet.getRow(6);
+                        } else if (tipoPermesso.equalsIgnoreCase("Permesso_studio")) {
+                            rowPermesso = sheet.getRow(7);
                         } else if (tipoPermesso.equalsIgnoreCase("Ferie")) {
                             rowPermesso = sheet.getRow(8);
                         } else {
                             continue;
                         }
 
-                        int giornoDelMese = giorno.getDayOfMonth() + 2;                  
+                        int giornoDelMese = giorno.getDayOfMonth() + 2;
 
                         Cell cellPermesso = rowPermesso.getCell(giornoDelMese);
                         if (cellPermesso == null) {
                             cellPermesso = rowPermesso.createCell(giornoDelMese);
                         }
 
+                        Date dataInizio2 = richiesta.getData_inizio();
+                        Date dataFine2 = richiesta.getData_fine();
+
+                        long differenzaInMillisecondi = dataFine2.getTime() - dataInizio2.getTime();
+
+                        long oreDurata = TimeUnit.MILLISECONDS.toHours(differenzaInMillisecondi);
+
                         if (tipoPermesso.equalsIgnoreCase("Ferie")) {
-                            cellPermesso.setCellValue("F");
+                            cellPermesso.setCellValue(user.getOre_contratto());
+                            Row row5Data2 = sheet.getRow(4);
+                            Cell giorno3 = row5Data2.getCell(giornoDelMese);
+                            giorno3.setCellType(CellType.NUMERIC);
+                            giorno3.setCellValue(0.00);
                         } else if (tipoPermesso.equalsIgnoreCase("Malattia")) {
-                            cellPermesso.setCellValue("M");
+                            cellPermesso.setCellValue(user.getOre_contratto());
+                            Row row5Data2 = sheet.getRow(4);
+                            Cell giorno3 = row5Data2.getCell(giornoDelMese);
+                            giorno3.setCellType(CellType.NUMERIC);
+                            giorno3.setCellValue(0.00);
                         } else if (tipoPermesso.equalsIgnoreCase("Permesso_studio")) {
-                            cellPermesso.setCellValue("PS");
+                            cellPermesso.setCellValue(oreDurata);
                         } else {
-                            cellPermesso.setCellValue("P");
+                            cellPermesso.setCellValue(oreDurata);
                         }
 
                         CellStyle permessoStyle = workbook.createCellStyle();
                         Font redFont2 = workbook.createFont();
                         redFont2.setColor(IndexedColors.RED.getIndex());
                         redFont2.setFontHeightInPoints((short) 12);
+                        DataFormat format = workbook.createDataFormat();
+                        permessoStyle.setDataFormat(format.getFormat("#,##0.00"));
                         permessoStyle.setFont(redFont2);
                         permessoStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
                         permessoStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
                         permessoStyle.setAlignment(HorizontalAlignment.CENTER);
                         permessoStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                        permessoStyle.setBorderTop(BorderStyle.MEDIUM);
-                        permessoStyle.setBorderBottom(BorderStyle.MEDIUM);
-                        permessoStyle.setBorderLeft(BorderStyle.MEDIUM);
-                        permessoStyle.setBorderRight(BorderStyle.MEDIUM);
+                        permessoStyle.setBorderTop(BorderStyle.THIN);
+                        permessoStyle.setBorderBottom(BorderStyle.THIN);
+                        permessoStyle.setBorderLeft(BorderStyle.THIN);
+                        permessoStyle.setBorderRight(BorderStyle.THIN);
                         cellPermesso.setCellStyle(permessoStyle);
                     }
                 }

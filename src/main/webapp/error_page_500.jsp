@@ -18,13 +18,14 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6 col-md-8 col-sm-10">
                     <div class="text-center mt-5">
-                        <h1 class="text-center">500</h1>
+                        <h1 class="text-centser">500</h1>
                         <hr style="color: #dc3545; border: 1px solid #dc3545">
                         <img src="assets/logo.png" id="responsive-img" alt="SmartOOP_logo">
                         <h1 class="kt-error_subtitle">Errore del server</h1>
                         <p class="kt-error_description">Ci scusiamo per il disagio. Si è verificato un errore interno del server. </p>
                         <p class="kt-error_description">
                             <button id="back_btn" class="btn Smartoop-btn-standard"><i class="fa fa-backspace"></i> Torna indietro</button>
+                            <button id="homepage" class="btn Smartoop-btn-standard"><i class="fa fa-home"></i> Homepage</button>
                         </p>
                         <hr style="color: #dc3545; border: 1px solid #dc3545">
                     </div>
@@ -42,6 +43,11 @@
             $(document).ready(function () {
                 $("#back_btn").click(function () {
                     window.history.back();
+                });
+            });
+            $(document).ready(function () {
+                $("#homepage").click(function () {
+                    window.location.href = "index.jsp";
                 });
             });
         </script>

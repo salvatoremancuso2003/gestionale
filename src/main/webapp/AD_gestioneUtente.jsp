@@ -303,7 +303,7 @@
                     </div>
                     <div class="modal-body">
                         Quale mese vuoi estrarre per <strong id="nomeUtenteModal2"></strong>?
-                        <input type="date" id="data" class="form-control" name="data">
+                        <input type="month" id="data" class="form-control" name="data" pattern="[0-9]{2}-[0-9]{4}" />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
