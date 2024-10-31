@@ -195,7 +195,7 @@
             <br>
 
             <div class="table-responsive">
-                <table id="attendanceTable" class="table table-striped table-hover table-bordered" style="width:100%">
+                <table id="attendanceTable" class="table table-striped table-hover table-bordered" style="width:100%; white-space: nowrap;">
                     <thead>
                         <tr>
                             <th class="SmartOOP-text-standard">Nome Completo</th>

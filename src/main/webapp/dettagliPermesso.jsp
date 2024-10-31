@@ -60,7 +60,7 @@
             <br>
             <h2 class="SmartOOP-text-standard text-center">Dettagli Permessi</h2>
             <div class="table-responsive">
-                <table class="table table-responsive table-hover table-striped" id="details_table">
+                <table class="table table-responsive table-hover table-striped" id="details_table" style="white-space: nowrap; width: 100%">
                     <thead>
                         <tr>
                             <th>Tipo</th>

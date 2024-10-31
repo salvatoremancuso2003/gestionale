@@ -203,7 +203,7 @@
             <br>
 
             <div class="table-responsive">
-                <table id="RichiesteTable" class="table table-striped table-hover display-responsive table-bordered" style="width:100%">
+                <table id="RichiesteTable" class="table table-striped table-hover display-responsive table-bordered" style="width:100%; white-space: nowrap;">
                     <thead>
                         <tr>
                             <th class="SmartOOP-text-standard">ID</th>

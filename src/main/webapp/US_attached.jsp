@@ -171,7 +171,7 @@
         <br>
         <div class="container-fluid">
             <div class="table-responsive">
-                <table id="allegatiTable" class="table table-striped table-hover table-bordered display-responsive" style="width:100%">
+                <table id="allegatiTable" class="table table-striped table-hover table-bordered display-responsive" style="width:100%; white-space: nowrap;">
                     <thead>
                         <tr>
                             <th class="SmartOOP-text-standard">Id :</th>
