@@ -44,7 +44,7 @@ public class SavePresenceServlet extends HttpServlet {
         try {
             if (isPresence) {
                 savePresence(request, response);
-            }else if(isDetails){
+            } else if (isDetails) {
                 getDettagliPresenza(request, response);
             }
 
@@ -87,33 +87,31 @@ public class SavePresenceServlet extends HttpServlet {
             }
         }
 
-        Presenza presenza = new Presenza();
+        LocalDate currentDate = LocalDate.now();
         Timestamp currentTimestamp = Timestamp.valueOf(LocalDateTime.now());
+        Presenza presenza = new Presenza();
+        Presenza lastPresenza = Utility.findLastPresenzaByUserOnDate(user_id, currentDate);
         presenza.setUtente(utente);
 
         switch (tipo) {
             case "ingresso":
-                Presenza lastPresenza = Utility.findLastPresenzaByUser(user_id);
-
                 if (lastPresenza != null && lastPresenza.getUscita() == null) {
                     response.sendRedirect("US_gestionale.jsp?esito=KO2&codice=002");
                     return;
                 }
 
-                presenza.setEntrata(currentTimestamp);
+                presenza.setEntrata(currentTimestamp); 
                 presenza.setTipo(tipoPresenza);
                 break;
 
             case "uscita":
-                lastPresenza = Utility.findLastPresenzaByUser(user_id);
-
                 if (lastPresenza == null || lastPresenza.getEntrata() == null || lastPresenza.getUscita() != null) {
                     response.sendRedirect("US_gestionale.jsp?esito=KO3&codice=002");
                     return;
                 }
 
-                lastPresenza.setUscita(currentTimestamp);
-                presenza = lastPresenza;
+                lastPresenza.setUscita(currentTimestamp); 
+                presenza = lastPresenza;  
                 break;
 
             default:
@@ -185,8 +183,7 @@ public class SavePresenceServlet extends HttpServlet {
             }
         }
     }
-    
-    
+
     //DataTable dettagli timbro : dettagliPresenza.jsp
     protected void getDettagliPresenza(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
