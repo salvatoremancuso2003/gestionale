@@ -78,16 +78,16 @@
                         <input type="text" class="form-control" name="nuovoCognome" id="cognome" required value="<%= user != null ? user.getCognome() : "" %>">
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
-
                 </div>
+                <br>
                 <div class="row">
-                    <div class="col-4">
+                    <div class="col-6">
                         <label for="email" class="form-label SmartOOP-text-standard" style="font-weight: bold">Email</label>
                         <input type="email" class="form-control" name="nuovaEmail" id="email" required value="<%= user != null ? user.getEmail() : "" %>">
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
 
-                    <div class="col-4">
+                    <div class="col-6">
                         <label for="numero_di_telefono" class="form-label SmartOOP-text-standard" style="font-weight: bold">Numero di telefono</label>
                         <div class="input-group">
                             <span class="input-group-text">+39</span> 
@@ -95,24 +95,27 @@
                         </div>
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
-                    <div class="col-4">
-                        <label for="ore_lavorative" class="form-label SmartOOP-text-standard" style="font-weight: bold">Ore contratto</label>
-                        <div class="input-group">
-                            <input type="text" maxlength="1" minlength="1" class="form-control" id="ore_lavorative" name="nuove_ore_lavorative" required pattern="\d{1}" value="<%= user != null ? user.getOre_contratto() : "" %>" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                        </div>
-                        <div class="invalid-feedback">Campo obbligatorio</div>
-                    </div>
                 </div>
+                <br>
                 <div class="row">
-                    <div class="col-6">
+
+                    <div class="col-4">
                         <label for="ferie" class="form-label SmartOOP-text-standard" style="font-weight: bold">Ferie disponibili (GIORNI)</label>
                         <input type="text" maxlength="2" class="form-control" name="ferie" id="ferie" required pattern="\d{1,2}" value="<%= user != null ? user.getFerie_disponibili() : "" %>" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="ore" class="form-label SmartOOP-text-standard" style="font-weight: bold">Ore R.O.L. disponibili</label>
                         <input type="text" maxlength="2" class="form-control" name="ore" id="ore" required pattern="\d{1,2}" value="<%= user != null ? user.getOre_disponibili() : "" %>" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <div class="invalid-feedback">Campo obbligatorio</div>
+                    </div>
+
+                    <div class="col-4">
+                        <label for="ore_lavorative" class="form-label SmartOOP-text-standard" style="font-weight: bold">Ore contratto</label>
+                        <div class="input-group">
+                            <input type="text" maxlength="1" minlength="1" class="form-control" id="ore_lavorative" name="nuove_ore_lavorative" required pattern="\d{1}" value="<%= user != null ? user.getOre_contratto() : "" %>" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        </div>
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
                 </div>
@@ -174,27 +177,27 @@
         <script src="js/External/jquery.fancybox.min.js"></script>
 
         <script>
-                            document.getElementById('updateButton').addEventListener('click', function (event) {
-                                event.preventDefault();
-                                var form = document.getElementById('editUserForm');
+                                document.getElementById('updateButton').addEventListener('click', function (event) {
+                                    event.preventDefault();
+                                    var form = document.getElementById('editUserForm');
 
-                                if (form.checkValidity()) {
-                                    $.ajax({
-                                        type: form.method,
-                                        url: form.action,
-                                        data: $(form).serialize(),
-                                        success: function (response) {
-                                            parent.jQuery.fancybox.close();
-                                            parent.window.location = 'AD_gestioneUtente.jsp?esito=OK&codice=007';
-                                        },
-                                        error: function () {
-                                            parent.window.location = 'AD_gestioneUtente.jsp?esito=KO&codice=007';
-                                        }
-                                    });
-                                } else {
-                                    form.classList.add('was-validated');
-                                }
-                            });
+                                    if (form.checkValidity()) {
+                                        $.ajax({
+                                            type: form.method,
+                                            url: form.action,
+                                            data: $(form).serialize(),
+                                            success: function (response) {
+                                                parent.jQuery.fancybox.close();
+                                                parent.window.location = 'AD_gestioneUtente.jsp?esito=OK&codice=007';
+                                            },
+                                            error: function () {
+                                                parent.window.location = 'AD_gestioneUtente.jsp?esito=KO&codice=007';
+                                            }
+                                        });
+                                    } else {
+                                        form.classList.add('was-validated');
+                                    }
+                                });
         </script>
 
 
