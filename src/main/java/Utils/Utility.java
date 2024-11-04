@@ -502,12 +502,13 @@ public class Utility {
         }
     }
 
-    public static Presenza findLastPresenzaByUser(Long userId) {
+    public static Presenza findLastPresenzaByUserOnDate(Long userId, LocalDate date) {
         EntityManager em = Persistence.createEntityManagerFactory("gestionale").createEntityManager();
         try {
             return em.createQuery(
-                    "SELECT p FROM Presenza p WHERE p.utente.id = :userId ORDER BY p.entrata DESC", Presenza.class)
+                    "SELECT p FROM Presenza p WHERE p.utente.id = :userId AND FUNCTION('DATE', p.entrata) = :date ORDER BY p.entrata DESC", Presenza.class)
                     .setParameter("userId", userId)
+                    .setParameter("date", date)
                     .setMaxResults(1)
                     .getSingleResult();
         } catch (NoResultException e) {
