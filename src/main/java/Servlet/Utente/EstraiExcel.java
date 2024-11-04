@@ -60,12 +60,18 @@ public class EstraiExcel extends HttpServlet {
         String tempFilePath = "COPIA_" + originalFile.getName();
         File tempFile = new File(originalFile.getParent(), tempFilePath);
 
-        if (!tempFile.exists()) {
-            try {
-                Files.copy(originalFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                logfile.severe(estraiEccezione(e));
+        if (tempFile.exists()) {
+            if (tempFile.length() == 0) {
+                tempFile.delete();
+            } else {
+                tempFile.delete();
             }
+        }
+
+        try {
+            Files.copy(originalFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            logfile.severe(estraiEccezione(e));
         }
 
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ITALY);
