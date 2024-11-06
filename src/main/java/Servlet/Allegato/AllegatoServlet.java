@@ -11,15 +11,16 @@ import Entity.Richiesta;
 import Entity.TipoDocumento;
 import Entity.Utente;
 import Enum.Tipo_documento_enum;
+import Utils.EncryptionUtil;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.findExcel;
 import static Utils.Utility.logfile;
-import static com.google.protobuf.JavaFeaturesProto.java;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -84,27 +85,27 @@ public class AllegatoServlet extends HttpServlet {
         String idRichiesta = request.getParameter("idRichiesta");
         String userIdPresenze = request.getParameter("userId");
         String data = request.getParameter("data");
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy");
         String baseDirectory = Utility.config.getString("basePath");
 
         if (userIdPresenze != null && data != null) {
             try {
                 Excel excel = findExcel(userIdPresenze, data);
-                if (isValidFilename(excel.getFileName())) {
-                    String filePath = baseDirectory + filename;
+                String filenameDecriptato = EncryptionUtil.decrypt(excel.getFileName());
+                if (isValidFilename(filenameDecriptato)) {
+                    String pathDecriptato = EncryptionUtil.decrypt(excel.getFilePath());
 
-                    if (isPathInBaseDirectory(filePath, baseDirectory)) {
-                        File downloadFile = new File(filePath);
+                    if (isPathInBaseDirectory(pathDecriptato, baseDirectory)) {
+                        File downloadFile = new File(pathDecriptato);
 
                         if (downloadFile.exists() && downloadFile.isFile()) {
-                            String mimeType = getMimeType(filePath);
+                            String mimeType = getMimeType(pathDecriptato);
                             if (mimeType == null) {
                                 mimeType = "application/octet-stream";
                             }
                             response.setContentType(mimeType);
 
                             String headerKey = "Content-Disposition";
-                            String sanitizedFilename = sanitizeFilename(filename);
+                            String sanitizedFilename = sanitizeFilename(filenameDecriptato);
                             String headerValue = String.format("attachment; filename=\"%s\"", sanitizedFilename);
                             response.setHeader(headerKey, headerValue);
 
@@ -148,21 +149,22 @@ public class AllegatoServlet extends HttpServlet {
 
             if (!delete) {
 
-                if (isValidFilename(filename)) {
-                    String filePath = baseDirectory + filename;
+                if (isValidFilename(EncryptionUtil.decrypt(filename))) {
+                    FileEntity file = findFileEntity(filename);
+                    String pathDecriptato = (EncryptionUtil.decrypt(file.getFilepath()));
 
-                    if (isPathInBaseDirectory(filePath, baseDirectory)) {
-                        File downloadFile = new File(filePath);
+                    if (isPathInBaseDirectory(pathDecriptato, baseDirectory)) {
+                        File downloadFile = new File(pathDecriptato);
 
                         if (downloadFile.exists() && downloadFile.isFile()) {
-                            String mimeType = getMimeType(filePath);
+                            String mimeType = getMimeType(pathDecriptato);
                             if (mimeType == null) {
                                 mimeType = "application/octet-stream";
                             }
                             response.setContentType(mimeType);
 
                             String headerKey = "Content-Disposition";
-                            String sanitizedFilename = sanitizeFilename(filename);
+                            String sanitizedFilename = sanitizeFilename(EncryptionUtil.decrypt(filename));
                             String headerValue = String.format("attachment; filename=\"%s\"", sanitizedFilename);
                             response.setHeader(headerKey, headerValue);
 
@@ -390,9 +392,10 @@ public class AllegatoServlet extends HttpServlet {
                 TipoDocumento tipoDocumento = findTipoDocumento(tipoEnum);
 
                 FileEntity fileEntity = new FileEntity();
-                fileEntity.setFilename(fileName);
-                String filePathCryptato = BCrypt.hashpw(filePath, BCrypt.gensalt());
+                String filePathCryptato = EncryptionUtil.encrypt(filePath);
                 fileEntity.setFilepath(filePathCryptato);
+                String filenameCryptato = EncryptionUtil.encrypt(fileName);
+                fileEntity.setFilename(filenameCryptato);
                 fileEntity.setFileSize(filePart.getSize());
                 fileEntity.setUploadDate(new Timestamp(new Date().getTime()));
                 fileEntity.setUser(utente);
@@ -486,9 +489,10 @@ public class AllegatoServlet extends HttpServlet {
 
             file.getParentFile().mkdirs();
             filePart.write(filePath);
-            String filePathCryptato = BCrypt.hashpw(filePath, BCrypt.gensalt());
+            String filePathCryptato = EncryptionUtil.encrypt(filePath);
             fileEntity.setFilepath(filePathCryptato);
-            fileEntity.setFilename(fileName);
+            String filenameCryptato = EncryptionUtil.encrypt(fileName);
+            fileEntity.setFilename(filenameCryptato);
             fileEntity.setFileSize(filePart.getSize());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String formattedDate = sdf.format(new Date());
@@ -577,6 +581,28 @@ public class AllegatoServlet extends HttpServlet {
             }
             if (entityManagerFactory != null) {
                 entityManagerFactory.close();
+            }
+        }
+    }
+
+    public FileEntity findFileEntity(String filename) {
+        EntityManager em = null;
+        EntityManagerFactory emf = null;
+        try {
+            emf = Persistence.createEntityManagerFactory("gestionale");
+            em = emf.createEntityManager();
+            TypedQuery<FileEntity> query = em.createNamedQuery("FileEntity.findByFilename", FileEntity.class).setParameter("filename", filename);
+            FileEntity file = query.getSingleResult();
+            return file;
+        } catch (Exception e) {
+            logfile.severe(estraiEccezione(e));
+            return null;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (emf != null) {
+                emf.close();
             }
         }
     }
