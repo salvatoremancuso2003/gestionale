@@ -5,6 +5,7 @@
 package Utils;
 
 import Entity.Email;
+import Entity.Excel;
 import Entity.FileEntity;
 import Entity.Pagina;
 import Entity.Permesso;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -289,6 +291,32 @@ public class Utility {
             FileEntity fileEntity = entityManager.find(FileEntity.class, 1L);
             return fileEntity;
 
+        } catch (Exception e) {
+            logfile.severe(estraiEccezione(e));
+            return null;
+        } finally {
+            if (entityManager != null) {
+                entityManager.close();
+            }
+            if (entityManagerFactory != null) {
+                entityManagerFactory.close();
+            }
+        }
+    }
+
+    public static Excel findExcel(String userId, String data) {
+        EntityManagerFactory entityManagerFactory = null;
+        EntityManager entityManager = null;
+
+        try {
+            entityManagerFactory = Persistence.createEntityManagerFactory("gestionale");
+            entityManager = entityManagerFactory.createEntityManager();
+
+            Excel excel = entityManager.createQuery("SELECT e FROM Excel e WHERE e.utente.id = :user_id AND e.date = :data", Excel.class)
+                    .setParameter("data", data)
+                    .setParameter("user_id", Long.valueOf(userId))
+                    .getSingleResult();
+            return excel;
         } catch (Exception e) {
             logfile.severe(estraiEccezione(e));
             return null;
@@ -969,13 +997,11 @@ public class Utility {
             entityManagerFactory = Persistence.createEntityManagerFactory("gestionale");
             entityManager = entityManagerFactory.createEntityManager();
 
-            // Calcola inizio e fine del mese della data scelta
             LocalDate firstDayOfMonth = dataScelta.withDayOfMonth(1);
             LocalDate lastDayOfMonth = dataScelta.withDayOfMonth(dataScelta.lengthOfMonth());
             Date startOfMonth = Date.from(firstDayOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
             Date endOfMonth = Date.from(lastDayOfMonth.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-            // Creazione query per cercare le richieste di permesso per l'utente e il mese specifico
             TypedQuery<Richiesta> query = entityManager.createQuery(
                     "SELECT r FROM Richiesta r WHERE r.utente.id = :userId AND r.stato = :stato "
                     + "AND ((r.data_inizio >= :startOfMonth AND r.data_inizio < :endOfMonth) "

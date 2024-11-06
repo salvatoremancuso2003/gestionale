@@ -632,7 +632,7 @@
 
                         });
         </script>
-        
+
         <script>
             var userIdDaRiabilitare = null;
 
@@ -682,7 +682,8 @@
             document.getElementById('confermaEstrazioneButton').addEventListener('click', function () {
                 if (userIdPresenze !== null) {
                     var data = document.getElementById('data').value;
-                    var url = 'EstraiExcel?userId=' + userIdPresenze + '&data=' + encodeURIComponent(data);
+                    alert(data);
+                    var url = 'AllegatoServlet?userId=' + userIdPresenze + '&isDownload=true' + '&data=' + encodeURIComponent(data);
                     window.location.href = url;
                 }
             });

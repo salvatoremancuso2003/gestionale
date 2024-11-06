@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    
     <servlet>
         <servlet-name>SavePresenceServlet</servlet-name>
         <servlet-class>Servlet.Presenze.SavePresenceServlet</servlet-class>
@@ -25,7 +24,6 @@
         <servlet-name>GetTurniDipendentiServlet</servlet-name>
         <servlet-class>Servlet.Presenze.GetTurniDipendentiServlet</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>RichiestaPermessoServlet</servlet-name>
         <servlet-class>Servlet.Richiesta.RichiestaPermessoServlet</servlet-class>
@@ -38,7 +36,6 @@
         <servlet-name>GetRichiesteServlet</servlet-name>
         <servlet-class>Servlet.Richiesta.GetRichiesteServlet</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>RichiestaPermessoServlet2</servlet-name>
         <servlet-class>Servlet.RichiestaPermessoServlet2</servlet-class>
@@ -63,6 +60,10 @@
         <servlet-name>EstraiExcel</servlet-name>
         <servlet-class>Servlet.Utente.EstraiExcel</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DownloadExcel</servlet-name>
+        <servlet-class>Servlet.Utente.DownloadExcel</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SavePresenceServlet</servlet-name>
         <url-pattern>/SavePresenceServlet</url-pattern>
@@ -79,8 +80,6 @@
         <servlet-name>GetTurniDipendentiServlet</servlet-name>
         <url-pattern>/GetTurniDipendentiServlet</url-pattern>
     </servlet-mapping>
-    
-    
     <servlet-mapping>
         <servlet-name>RichiestaPermessoServlet</servlet-name>
         <url-pattern>/RichiestaPermessoServlet</url-pattern>
@@ -101,7 +100,6 @@
         <servlet-name>GetRichiesteServlet</servlet-name>
         <url-pattern>/GetRichiesteServlet</url-pattern>
     </servlet-mapping>
-    
     <servlet-mapping>
         <servlet-name>RichiestaPermessoServlet2</servlet-name>
         <url-pattern>/RichiestaPermessoServlet2</url-pattern>
@@ -125,6 +123,10 @@
     <servlet-mapping>
         <servlet-name>EstraiExcel</servlet-name>
         <url-pattern>/EstraiExcel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DownloadExcel</servlet-name>
+        <url-pattern>/DownloadExcel</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

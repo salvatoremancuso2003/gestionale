@@ -4,6 +4,7 @@
  */
 package Servlet.Allegato;
 
+import Entity.Excel;
 import Entity.FileEntity;
 import Entity.InfoTrack;
 import Entity.Richiesta;
@@ -12,7 +13,9 @@ import Entity.Utente;
 import Enum.Tipo_documento_enum;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
+import static Utils.Utility.findExcel;
 import static Utils.Utility.logfile;
+import static com.google.protobuf.JavaFeaturesProto.java;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -39,6 +42,7 @@ import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFPictureData;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -59,13 +63,13 @@ public class AllegatoServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         boolean isDownload = Boolean.parseBoolean(request.getParameter("isDownload"));
         boolean isUpload = Boolean.parseBoolean(request.getParameter("isUpload"));
-        
-        if(isDownload){
+
+        if (isDownload) {
             downloadFile(request, response);
-        } else if(isUpload){
+        } else if (isUpload) {
             uploadAllegato(request, response);
         }
 
@@ -78,75 +82,136 @@ public class AllegatoServlet extends HttpServlet {
         String filename = request.getParameter("filename");
         String id = request.getParameter("id");
         String idRichiesta = request.getParameter("idRichiesta");
-
+        String userIdPresenze = request.getParameter("userId");
+        String data = request.getParameter("data");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy");
         String baseDirectory = Utility.config.getString("basePath");
-        Boolean delete = Boolean.valueOf(request.getParameter("delete"));
 
-        if (!delete) {
+        if (userIdPresenze != null && data != null) {
+            try {
+                Excel excel = findExcel(userIdPresenze, data);
+                if (isValidFilename(excel.getFileName())) {
+                    String filePath = baseDirectory + filename;
 
-            if (isValidFilename(filename)) {
-                String filePath = baseDirectory + filename;
+                    if (isPathInBaseDirectory(filePath, baseDirectory)) {
+                        File downloadFile = new File(filePath);
 
-                if (isPathInBaseDirectory(filePath, baseDirectory)) {
-                    File downloadFile = new File(filePath);
-
-                    if (downloadFile.exists() && downloadFile.isFile()) {
-                        String mimeType = getMimeType(filePath);
-                        if (mimeType == null) {
-                            mimeType = "application/octet-stream";
-                        }
-                        response.setContentType(mimeType);
-
-                        String headerKey = "Content-Disposition";
-                        String sanitizedFilename = sanitizeFilename(filename);
-                        String headerValue = String.format("attachment; filename=\"%s\"", sanitizedFilename);
-                        response.setHeader(headerKey, headerValue);
-
-                        try (OutputStream out = response.getOutputStream(); FileInputStream in = new FileInputStream(downloadFile)) {
-                            byte[] buffer = new byte[4096];
-                            int bytesRead;
-                            while ((bytesRead = in.read(buffer)) != -1) {
-                                out.write(buffer, 0, bytesRead);
+                        if (downloadFile.exists() && downloadFile.isFile()) {
+                            String mimeType = getMimeType(filePath);
+                            if (mimeType == null) {
+                                mimeType = "application/octet-stream";
                             }
-                            logfile.info("Il file è stato scaricato con successo!");
+                            response.setContentType(mimeType);
 
-                        } catch (Exception e) {
-                            logfile.severe(estraiEccezione(e));
-                            response.setContentType("text/plain; charset=UTF-8");
+                            String headerKey = "Content-Disposition";
+                            String sanitizedFilename = sanitizeFilename(filename);
+                            String headerValue = String.format("attachment; filename=\"%s\"", sanitizedFilename);
+                            response.setHeader(headerKey, headerValue);
+
+                            try (OutputStream out = response.getOutputStream(); FileInputStream in = new FileInputStream(downloadFile)) {
+                                byte[] buffer = new byte[4096];
+                                int bytesRead;
+                                while ((bytesRead = in.read(buffer)) != -1) {
+                                    out.write(buffer, 0, bytesRead);
+                                }
+                                logfile.info("Il file è stato scaricato con successo!");
+
+                            } catch (Exception e) {
+                                logfile.severe(estraiEccezione(e));
+                                response.setContentType("text/plain; charset=UTF-8");
+                                response.getOutputStream()
+                                        .write("Errore durante il download del file.".getBytes(StandardCharsets.UTF_8));
+                            }
+                        } else {
+                            response.setContentType("text/plain");
                             response.getOutputStream()
-                                    .write("Errore durante il download del file.".getBytes(StandardCharsets.UTF_8));
+                                    .write("Il file richiesto non esiste o non è accessibile."
+                                            .getBytes(StandardCharsets.UTF_8));
                         }
                     } else {
                         response.setContentType("text/plain");
                         response.getOutputStream()
-                                .write("Il file richiesto non esiste o non è accessibile."
-                                        .getBytes(StandardCharsets.UTF_8));
+                                .write("Accesso non autorizzato al percorso del file.".getBytes(StandardCharsets.UTF_8));
                     }
                 } else {
                     response.setContentType("text/plain");
-                    response.getOutputStream()
-                            .write("Accesso non autorizzato al percorso del file.".getBytes(StandardCharsets.UTF_8));
+                    response.getOutputStream().write("Nome del file non valido.".getBytes(StandardCharsets.UTF_8));
                 }
-            } else {
-                response.setContentType("text/plain");
-                response.getOutputStream().write("Nome del file non valido.".getBytes(StandardCharsets.UTF_8));
-            }
-        } else if (delete) {
-            try {
-                if (idRichiesta != null) {
-                    deleteFileEntity(id, response, idRichiesta);
-                    updateRichiesta(idRichiesta);
-                } else {
-                    deleteFileEntity2(id, response);
-                }
-
-                logfile.info("File cancellato con successo!");
             } catch (Exception e) {
                 logfile.severe(estraiEccezione(e));
-                response.sendRedirect("AD_attached.jsp?esito=KO&codice=004");
+                response.sendRedirect("AD_gestioneUtente.jsp?esito=KO&codice=010");
             }
-        }
 
+        } else {
+
+            Boolean delete = Boolean.valueOf(request.getParameter("delete"));
+
+            if (!delete) {
+
+                if (isValidFilename(filename)) {
+                    String filePath = baseDirectory + filename;
+
+                    if (isPathInBaseDirectory(filePath, baseDirectory)) {
+                        File downloadFile = new File(filePath);
+
+                        if (downloadFile.exists() && downloadFile.isFile()) {
+                            String mimeType = getMimeType(filePath);
+                            if (mimeType == null) {
+                                mimeType = "application/octet-stream";
+                            }
+                            response.setContentType(mimeType);
+
+                            String headerKey = "Content-Disposition";
+                            String sanitizedFilename = sanitizeFilename(filename);
+                            String headerValue = String.format("attachment; filename=\"%s\"", sanitizedFilename);
+                            response.setHeader(headerKey, headerValue);
+
+                            try (OutputStream out = response.getOutputStream(); FileInputStream in = new FileInputStream(downloadFile)) {
+                                byte[] buffer = new byte[4096];
+                                int bytesRead;
+                                while ((bytesRead = in.read(buffer)) != -1) {
+                                    out.write(buffer, 0, bytesRead);
+                                }
+                                logfile.info("Il file è stato scaricato con successo!");
+
+                            } catch (Exception e) {
+                                logfile.severe(estraiEccezione(e));
+                                response.setContentType("text/plain; charset=UTF-8");
+                                response.getOutputStream()
+                                        .write("Errore durante il download del file.".getBytes(StandardCharsets.UTF_8));
+                            }
+                        } else {
+                            response.setContentType("text/plain");
+                            response.getOutputStream()
+                                    .write("Il file richiesto non esiste o non è accessibile."
+                                            .getBytes(StandardCharsets.UTF_8));
+                        }
+                    } else {
+                        response.setContentType("text/plain");
+                        response.getOutputStream()
+                                .write("Accesso non autorizzato al percorso del file.".getBytes(StandardCharsets.UTF_8));
+                    }
+                } else {
+                    response.setContentType("text/plain");
+                    response.getOutputStream().write("Nome del file non valido.".getBytes(StandardCharsets.UTF_8));
+                }
+            } else if (delete) {
+                try {
+                    if (idRichiesta != null) {
+                        deleteFileEntity(id, response, idRichiesta);
+                        updateRichiesta(idRichiesta);
+                    } else {
+                        deleteFileEntity2(id, response);
+                    }
+
+                    logfile.info("File cancellato con successo!");
+                } catch (Exception e) {
+                    logfile.severe(estraiEccezione(e));
+                    response.sendRedirect("AD_attached.jsp?esito=KO&codice=004");
+                }
+            }
+
+        }
     }
 
     private boolean isValidFilename(String filename) {
@@ -273,8 +338,7 @@ public class AllegatoServlet extends HttpServlet {
             }
         }
     }
-    
-    
+
     // private static final String UPLOAD_DIR = "uploads";
     // Metodo Carica Allegato
     protected void uploadAllegato(HttpServletRequest request, HttpServletResponse response)
@@ -327,7 +391,8 @@ public class AllegatoServlet extends HttpServlet {
 
                 FileEntity fileEntity = new FileEntity();
                 fileEntity.setFilename(fileName);
-                fileEntity.setFilepath(filePath);
+                String filePathCryptato = BCrypt.hashpw(filePath, BCrypt.gensalt());
+                fileEntity.setFilepath(filePathCryptato);
                 fileEntity.setFileSize(filePart.getSize());
                 fileEntity.setUploadDate(new Timestamp(new Date().getTime()));
                 fileEntity.setUser(utente);
@@ -421,7 +486,8 @@ public class AllegatoServlet extends HttpServlet {
 
             file.getParentFile().mkdirs();
             filePart.write(filePath);
-            fileEntity.setFilepath(filePath);
+            String filePathCryptato = BCrypt.hashpw(filePath, BCrypt.gensalt());
+            fileEntity.setFilepath(filePathCryptato);
             fileEntity.setFilename(fileName);
             fileEntity.setFileSize(filePart.getSize());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -514,6 +580,7 @@ public class AllegatoServlet extends HttpServlet {
             }
         }
     }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

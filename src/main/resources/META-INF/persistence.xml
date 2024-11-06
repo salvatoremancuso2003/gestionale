@@ -8,6 +8,7 @@
     <class>Entity.Permesso</class>
     <class>Entity.Richiesta</class>
     <class>Entity.TipoDocumento</class>
+    <class>Entity.Excel</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/gestionale?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
