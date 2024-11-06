@@ -6,6 +6,7 @@ package Servlet.Login;
 
 import Entity.InfoTrack;
 import Entity.Utente;
+import Utils.EncryptionUtil;
 import Utils.Utility;
 import static Utils.Utility.logfile;
 import jakarta.servlet.ServletException;
@@ -34,15 +35,14 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String isLogin = request.getParameter("isLogin");
-        
 
         try {
             if (isLogin.equals("true")) {
                 Login(request, response);
-            } else{
+            } else {
                 Logout(request, response);
             }
-            
+
         } catch (ServletException | IOException e) {
             e.printStackTrace();
         }
@@ -70,14 +70,14 @@ public class LoginServlet extends HttpServlet {
                         String userIdParam = session.getAttribute("userId").toString();
                         int userId = Utility.tryParse(userIdParam);
                         session.setAttribute("username", Utility.sanitize(user.getUsername()));
-                        session.setAttribute("nome", Utility.sanitize(user.getNome()));
+                        session.setAttribute("nome", Utility.sanitize(EncryptionUtil.decrypt(user.getNome())));
                         session.setAttribute("user", user);
                         if (user.getRuolo().getId() == 2) {
                             if (user.getStatus() == 0) {
                                 response.sendRedirect("index.jsp?esito=KO2&codice=000");
                             } else if (user.getStatus() == 1) {
                                 redirectToPageByRole(response, request, userId, roleId);
-                                InfoTrack.loginTrack(user.getNome(), user);
+                                InfoTrack.loginTrack(EncryptionUtil.decrypt(user.getNome()), user);
                             } else if (user.getStatus() == 2) {
                                 response.sendRedirect("edit_password.jsp");
                             }
@@ -143,7 +143,7 @@ public class LoginServlet extends HttpServlet {
         try {
             HttpSession session = request.getSession();
             Utente userSession = (Utente) session.getAttribute("user");
-            InfoTrack.logoutTrack(userSession.getNome(), userSession);
+            InfoTrack.logoutTrack(EncryptionUtil.decrypt(userSession.getNome()), userSession);
             request.getSession().invalidate();
 
             response.sendRedirect("index.jsp?esito=OK&codice=000");

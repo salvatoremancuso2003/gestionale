@@ -13,6 +13,7 @@ import Entity.Utente;
 import Enum.Si_no_enum;
 import Enum.Stato_enum;
 import Enum.Tipo_documento_enum;
+import Utils.EncryptionUtil;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
@@ -230,7 +231,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
 
                 response.setContentType("text/plain;charset=UTF-8");
                 response.sendRedirect("US_gestionale.jsp?esito=OK&codice=001");
-                InfoTrack.richiestaTrackUpdate(utente.getNome(), richiesta, utente);
+                InfoTrack.richiestaTrackUpdate(EncryptionUtil.decrypt(utente.getNome()), richiesta, utente);
             } catch (ServletException | IOException | ParseException e) {
                 logfile.severe(estraiEccezione(e));
 

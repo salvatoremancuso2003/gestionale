@@ -9,6 +9,7 @@ import Entity.Presenza;
 import Entity.TipoPresenza;
 import Entity.Utente;
 import Enum.Tipo_presenza_enum;
+import Utils.EncryptionUtil;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
@@ -75,7 +76,7 @@ public class SavePresenceServlet extends HttpServlet {
         String user_id_param = session.getAttribute("userId").toString();
         Long user_id = Long.valueOf(user_id_param);
         Utente utente = Utility.findUserById(user_id);
-        String usName = utente.getNome();
+        String usName = EncryptionUtil.decrypt(utente.getNome());
 
         TipoPresenza tipoPresenza = null;
         if (tipo.equals(tipoIngresso)) {
@@ -200,7 +201,7 @@ public class SavePresenceServlet extends HttpServlet {
             if (presenza != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("tipo", presenza.getTipo().getTipo().toString());
-                jsonObject.addProperty("nomeCompleto", presenza.getUtente().getNome() + " " + presenza.getUtente().getCognome());
+                jsonObject.addProperty("nomeCompleto", EncryptionUtil.decrypt(presenza.getUtente().getNome()) + " " + EncryptionUtil.decrypt(presenza.getUtente().getCognome()));
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 jsonObject.addProperty("ingresso", sdf.format(presenza.getEntrata()));
                 jsonObject.addProperty("uscita", presenza.getUscita() != null ? sdf.format(presenza.getUscita()) : "Uscita non ancora registrata");

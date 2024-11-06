@@ -456,7 +456,7 @@ public class AllegatoServlet extends HttpServlet {
                 response.setContentType("text/plain;charset=UTF-8");
                 PrintWriter out = response.getWriter();
                 response.sendRedirect("AD_attached.jsp?esito=OK&codice=005");
-                InfoTrack.fileTrackUpload(utente.getNome(), fileEntity, utente);
+                InfoTrack.fileTrackUpload(EncryptionUtil.decrypt(utente.getNome()), fileEntity, utente);
 
             } catch (Exception e) {
                 logfile.severe(estraiEccezione(e));

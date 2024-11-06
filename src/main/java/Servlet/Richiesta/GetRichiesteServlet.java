@@ -1,6 +1,7 @@
 package Servlet.Richiesta;
 
 import Entity.Richiesta;
+import Utils.EncryptionUtil;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
 import java.text.SimpleDateFormat;
@@ -119,7 +120,7 @@ public class GetRichiesteServlet extends HttpServlet {
                 JsonObject rc = new JsonObject();
                 rc.addProperty("id", richiesta.getId());
                 rc.addProperty("tipoPermesso", richiesta.getTipo_permesso().getDescrizione());
-                rc.addProperty("nomeUtente", richiesta.getUtente().getNome() + " " + richiesta.getUtente().getCognome());
+                rc.addProperty("nomeUtente", EncryptionUtil.decrypt(richiesta.getUtente().getNome()) + " " + EncryptionUtil.decrypt(richiesta.getUtente().getCognome()));
                 rc.addProperty("dataInizio", sdfOut.format(richiesta.getData_inizio()));
                 rc.addProperty("dataFine", sdfOut.format(richiesta.getData_fine()));
                 LocalDateTime dataInizio = richiesta.getData_inizio().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -147,7 +148,7 @@ public class GetRichiesteServlet extends HttpServlet {
                         action = "<button class='btn btn-warning d-flex align-items-center' title='GESTISCI RICHIESTA' id='" + richiesta.getId() + "' onclick=\"mostraModalConferma("
                                 + supera
                                 + "," + richiesta.getId()
-                                + ",'" + richiesta.getUtente().getNome() + "'"
+                                + ",'" + EncryptionUtil.decrypt(richiesta.getUtente().getNome()) + "'"
                                 + ",'" + richiesta.getTipo_permesso().getDescrizione() + "'"
                                 + ",'" + dataInizioFormattata + "'"
                                 + ",'" + dataFineFormattata + "'"
