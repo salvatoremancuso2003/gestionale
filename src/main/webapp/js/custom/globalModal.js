@@ -390,7 +390,7 @@ if (esito !== null && codice !== null) {
         esitoModal.show();
         redirect();
     } else if (esito === 'KO' & codice === '010') {
-        esitoModalBody.textContent = "Non è stato possibile generare l'excel per l'utente selezionato. Riprova.";
+        esitoModalBody.textContent = "Excel non ancora generato. Riprova.";
         esitoModalBody.style.color = '#dc3545';
         esitoModalHeader.style.background = '#dc3545';
         esitoModalHeader.style.color = 'white';
