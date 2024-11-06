@@ -3,6 +3,7 @@ package Servlet.Utente;
 import Entity.InfoTrack;
 import Entity.Ruolo;
 import Entity.Utente;
+import Utils.EncryptionUtil;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
@@ -143,8 +144,8 @@ public class InserisciNuovoUtente extends HttpServlet {
                 int ore = tryParse(oreParam);
 
                 utente = em.find(Utente.class, Long.valueOf(userIdParam));
-                utente.setNome(nuovoNome);
-                utente.setCognome(nuovoCognome);
+                utente.setNome(EncryptionUtil.encrypt(nuovoNome));
+                utente.setCognome(EncryptionUtil.encrypt(nuovoCognome));
                 utente.setEmail(nuovaEmail);
                 utente.setNumero_di_telefono("+39" + nuovoNumero);
                 utente.setOre_contratto(nuove_ore_lavorative);
@@ -155,15 +156,15 @@ public class InserisciNuovoUtente extends HttpServlet {
                 response.sendRedirect("edit_user.jsp?esito=OK&codice=007&userId=" + userIdParam);
             } else if (!isRemove && !isUpdate) {
                 utente = new Utente();
-                utente.setNome(nome);
-                utente.setCognome(cognome);
+                utente.setNome(EncryptionUtil.encrypt(nome));
+                utente.setCognome(EncryptionUtil.encrypt(cognome));
                 utente.setEmail(email);
                 String username = "US_" + Utility.createNewRandomNumbers(2) + "." + email;
                 utente.setUsername(username);
                 utente.setNumero_di_telefono("+39" + numero);
                 utente.setOre_contratto(ore_lavorative);
                 String password = Utility.createNewRandomPassword(8);
-                String nomeCompleto = utente.getNome() + " " + utente.getCognome();
+                String nomeCompleto = EncryptionUtil.decrypt(utente.getNome()) + " " + EncryptionUtil.decrypt(utente.getCognome());
 
                 if (Utility.validateEmail(email)) {
                     Utility.sendEmail(utente.getEmail(), nomeCompleto, utente.getId(), username, password);
@@ -177,7 +178,7 @@ public class InserisciNuovoUtente extends HttpServlet {
                 em.persist(utente);
                 logfile.info("Utente creato con successo!");
                 response.sendRedirect("AD_gestioneUtente.jsp?esito=OK&codice=006");
-                InfoTrack.insertNewUser(AdminUser.getNome(), AdminUser);
+                InfoTrack.insertNewUser(EncryptionUtil.decrypt(AdminUser.getNome()), AdminUser);
             }
 
             et.commit();

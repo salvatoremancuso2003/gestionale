@@ -6,6 +6,7 @@ package Servlet.Presenze;
 
 import Entity.Presenza;
 import Entity.Utente;
+import Utils.EncryptionUtil;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
 import com.google.gson.Gson;
@@ -85,7 +86,7 @@ public class GetDipendentiPresenzaServlet extends HttpServlet {
         for (Presenza p : presenze) {
             if (matchPresenza(p, startDate, endDate, sede, utenteId)) {
                 Map<String, Object> list_presenze = new HashMap<>();
-                list_presenze.put("name", p.getUtente().getNome() + " " + p.getUtente().getCognome());
+                list_presenze.put("name", EncryptionUtil.decrypt(p.getUtente().getNome()) + " " + EncryptionUtil.decrypt(p.getUtente().getCognome()));
                 list_presenze.put("tipo", p.getTipo().getTipo());
 
                 String entrataFormatted = (p.getEntrata() != null) ? sdf.format(p.getEntrata()) : "Non registrata";

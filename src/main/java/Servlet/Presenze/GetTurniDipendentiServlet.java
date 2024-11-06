@@ -7,6 +7,7 @@ package Servlet.Presenze;
 import Entity.Presenza;
 import Entity.Richiesta;
 import Entity.Utente;
+import Utils.EncryptionUtil;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
 import com.google.gson.Gson;
@@ -65,7 +66,7 @@ public class GetTurniDipendentiServlet extends HttpServlet {
 
                 for (Presenza p : presenze) {
                     String giorno = new SimpleDateFormat("yyyy-MM-dd").format(p.getEntrata());
-                    String utenteKey = p.getUtente().getNome();
+                    String utenteKey = EncryptionUtil.decrypt(p.getUtente().getNome());
 
                     presenzeAggregate.putIfAbsent(utenteKey, new HashMap<>());
                     Map<String, StringBuilder> presenzePerData = presenzeAggregate.get(utenteKey);
@@ -99,10 +100,10 @@ public class GetTurniDipendentiServlet extends HttpServlet {
                         String giornoPermesso = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
 
                         Map<String, Object> permessoEvent = new HashMap<>();
-                        permessoEvent.put("title", "Permesso - " + richiesta.getTipo_permesso().getDescrizione() + " - " + richiesta.getUtente().getNome());
+                        permessoEvent.put("title", "Permesso - " + richiesta.getTipo_permesso().getDescrizione() + " - " + EncryptionUtil.decrypt(richiesta.getUtente().getNome()));
                         permessoEvent.put("start", giornoPermesso);
                         permessoEvent.put("end", giornoPermesso);
-                        permessoEvent.put("description", "Permesso di tipo " + richiesta.getTipo_permesso().getDescrizione() + " di " + richiesta.getUtente().getNome());
+                        permessoEvent.put("description", "Permesso di tipo " + richiesta.getTipo_permesso().getDescrizione() + " di " + EncryptionUtil.decrypt(richiesta.getUtente().getNome()));
                         permessoEvent.put("color", "#28a745");
                         permessoEvent.put("richiestaId", richiesta.getId());
                         permessoEvent.put("permesso", true);
@@ -214,7 +215,7 @@ public class GetTurniDipendentiServlet extends HttpServlet {
                     for (Presenza p : presenze) {
                         String userIdPresenza2 = p.getUtente().getId().toString();
                         String giorno = new SimpleDateFormat("yyyy-MM-dd").format(p.getEntrata());
-                        String utenteKey = p.getUtente().getNome();
+                        String utenteKey = EncryptionUtil.decrypt(p.getUtente().getNome());
 
                         presenzeAggregate.putIfAbsent(utenteKey, new HashMap<>());
                         Map<String, StringBuilder> presenzePerData = presenzeAggregate.get(utenteKey);
@@ -245,10 +246,10 @@ public class GetTurniDipendentiServlet extends HttpServlet {
                             String giornoPermesso = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
 
                             Map<String, Object> permessoEvent = new HashMap<>();
-                            permessoEvent.put("title", "Permesso - " + richiesta.getTipo_permesso().getDescrizione() + " - " + richiesta.getUtente().getNome());
+                            permessoEvent.put("title", "Permesso - " + richiesta.getTipo_permesso().getDescrizione() + " - " + EncryptionUtil.decrypt(richiesta.getUtente().getNome()));
                             permessoEvent.put("start", giornoPermesso);
                             permessoEvent.put("end", giornoPermesso);
-                            permessoEvent.put("description", "Permesso di tipo " + richiesta.getTipo_permesso().getDescrizione() + " di " + richiesta.getUtente().getNome());
+                            permessoEvent.put("description", "Permesso di tipo " + richiesta.getTipo_permesso().getDescrizione() + " di " + EncryptionUtil.decrypt(richiesta.getUtente().getNome()));
                             permessoEvent.put("color", "#28a745");
                             permessoEvent.put("richiestaId", richiesta.getId());
                             permessoEvent.put("permesso", true);

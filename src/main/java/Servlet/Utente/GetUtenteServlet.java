@@ -1,6 +1,7 @@
 package Servlet.Utente;
 
 import Entity.Utente;
+import Utils.EncryptionUtil;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
 import java.text.SimpleDateFormat;
@@ -51,12 +52,12 @@ public class GetUtenteServlet extends HttpServlet {
                 JsonObject rc = new JsonObject();
                 rc.addProperty("id", utente.getId());
                 if (utente.getNome() != null) {
-                    rc.addProperty("nome", utente.getNome());
+                    rc.addProperty("nome", EncryptionUtil.decrypt(utente.getNome()));
                 } else {
                     rc.addProperty("nome", "Non disponibile");
                 }
                 if (utente.getCognome() != null) {
-                    rc.addProperty("cognome", utente.getCognome());
+                    rc.addProperty("cognome", EncryptionUtil.decrypt(utente.getCognome()));
                 } else {
                     rc.addProperty("cognome", "Non disponibile");
                 }
@@ -78,7 +79,7 @@ public class GetUtenteServlet extends HttpServlet {
                 String estraiPresenze = "<div class='container'>"
                         + "<div class='d-flex'>"
                         + "<button class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px; color:white;' "
-                        + " onclick='estraiPresenze(" + utente.getId() + ", \"" + utente.getNome() + " " + utente.getCognome() + "\")'>"
+                        + " onclick='estraiPresenze(" + utente.getId() + ", \"" + EncryptionUtil.decrypt(utente.getNome()) + " " + EncryptionUtil.decrypt(utente.getCognome()) + "\")'>"
                         + "Estrai excel</button>"
                         + "</div>"
                         + "</div>";
@@ -89,7 +90,7 @@ public class GetUtenteServlet extends HttpServlet {
                     actionButton = "<div class='container'>"
                             + "<div class='d-flex'>"
                             + "<button class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px; color:white;' "
-                            + " onclick='riabilitaUtente(" + utente.getId() + ", \"" + utente.getNome() + " " + utente.getCognome() + "\")'>"
+                            + " onclick='riabilitaUtente(" + utente.getId() + ", \"" + EncryptionUtil.decrypt(utente.getNome()) + " " + EncryptionUtil.decrypt(utente.getCognome()) + "\")'>"
                             + "Riabilita utente</button>"
                             + "</div>"
                             + "</div>";

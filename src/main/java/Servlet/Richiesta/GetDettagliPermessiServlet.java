@@ -7,6 +7,7 @@ package Servlet.Richiesta;
 import Entity.Richiesta;
 import Entity.Utente;
 import Enum.Si_no_enum;
+import Utils.EncryptionUtil;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
@@ -55,7 +56,7 @@ public class GetDettagliPermessiServlet extends HttpServlet {
         if (richiesta != null) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("tipo", richiesta.getTipo_permesso().getDescrizione());
-            jsonObject.addProperty("nomeCompleto", richiesta.getUtente().getNome() + " " + richiesta.getUtente().getCognome());
+            jsonObject.addProperty("nomeCompleto", EncryptionUtil.decrypt(richiesta.getUtente().getNome()) + " " + EncryptionUtil.decrypt(richiesta.getUtente().getCognome()));
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             SimpleDateFormat sdfFormatData = new SimpleDateFormat("dd/MM/yyyy");
             if (richiesta.getTipo_permesso().getOre().equals(Si_no_enum.NO)) {

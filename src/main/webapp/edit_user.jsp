@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="Utils.Utility"%>
+<%@page import="Utils.EncryptionUtil"%>
 <%@page import="Entity.FileEntity"%>
 <%@page import="Entity.Utente"%>
 <%@page import="java.time.LocalDate"%>
@@ -69,13 +70,13 @@
                 <div class="row">
                     <div class="col-6">
                         <label for="nome" class="form-label SmartOOP-text-standard" style="font-weight: bold">Nome</label>
-                        <input type="text" class="form-control" name="nuovoNome" id="nome" required value="<%= user != null ? user.getNome() : "" %>">
+                        <input type="text" class="form-control" name="nuovoNome" id="nome" required value="<%= user != null ? EncryptionUtil.decrypt(user.getNome()) : "" %>">
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
 
                     <div class="col-6">
                         <label for="cognome" class="form-label SmartOOP-text-standard" style="font-weight: bold">Cognome</label>
-                        <input type="text" class="form-control" name="nuovoCognome" id="cognome" required value="<%= user != null ? user.getCognome() : "" %>">
+                        <input type="text" class="form-control" name="nuovoCognome" id="cognome" required value="<%= user != null ? EncryptionUtil.decrypt(user.getCognome()) : "" %>">
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
                 </div>
