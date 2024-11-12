@@ -9,9 +9,11 @@
 <%@page import="Utils.EncryptionUtil"%>
 <%@page import="Entity.FileEntity"%>
 <%@page import="Entity.Utente"%>
+<%@page import="Entity.Ruolo"%>
 <%@page import="java.time.LocalDate"%>
 <%@page import="java.time.ZoneId"%>
 <%@page import="java.util.Date"%>
+<%@page import="java.util.List"%>
 <%
     String userId = Utility.checkAttribute(session, "userId");
     String ruolo = null;
@@ -82,13 +84,13 @@
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="email" class="form-label SmartOOP-text-standard" style="font-weight: bold">Email</label>
                         <input type="email" class="form-control" name="nuovaEmail" id="email" required value="<%= user != null ? user.getEmail() : "" %>">
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="numero_di_telefono" class="form-label SmartOOP-text-standard" style="font-weight: bold">Numero di telefono</label>
                         <div class="input-group">
                             <span class="input-group-text">+39</span> 
@@ -96,6 +98,24 @@
                         </div>
                         <div class="invalid-feedback">Campo obbligatorio</div>
                     </div>
+                    <% List <Ruolo> AllRuoli = Utility.getAllRuoli();%>
+                    <div class="col-4">
+                        <label for="ruolo" class="form-label SmartOOP-text-standard"  style="font-weight: bold">Tipo di ruolo</label>
+                        <select class="form-select" id="nuovoRuolo" name="nuovoRuolo" required>
+                            <option value="<%= user != null ? user.getRuolo().getNome() : "" %>" selected>
+                                <%= user != null ? user.getRuolo().getNome() : "Seleziona..." %>
+                            </option>
+
+                            <% for (Ruolo r : AllRuoli) { %>
+                            <% if(r.getId() != user.getRuolo().getId()){ %>
+                            <option value="<%= r.getId() %>"><%= r.getNome() %></option>
+                            <% } 
+}
+                            %>
+                        </select>
+                        <div class="invalid-feedback">Campo obbligatorio</div>
+                    </div>
+
                 </div>
                 <br>
                 <div class="row">
@@ -156,7 +176,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Sei sicuro di voler eliminare l'utente <strong><%= user != null ? user.getNome() + " " + user.getCognome() : "" %></strong>? 
+                        Sei sicuro di voler eliminare l'utente <strong><%= user != null ? EncryptionUtil.decrypt(user.getNome()) + " " + EncryptionUtil.decrypt(user.getCognome()) : "" %></strong>? 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>

@@ -72,17 +72,13 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("username", Utility.sanitize(user.getUsername()));
                         session.setAttribute("nome", Utility.sanitize(EncryptionUtil.decrypt(user.getNome())));
                         session.setAttribute("user", user);
-                        if (user.getRuolo().getId() == 2) {
-                            if (user.getStatus() == 0) {
-                                response.sendRedirect("index.jsp?esito=KO2&codice=000");
-                            } else if (user.getStatus() == 1) {
-                                redirectToPageByRole(response, request, userId, roleId);
-                                InfoTrack.loginTrack(EncryptionUtil.decrypt(user.getNome()), user);
-                            } else if (user.getStatus() == 2) {
-                                response.sendRedirect("edit_password.jsp");
-                            }
-                        } else if (user.getRuolo().getId() == 1) {
+                        if (user.getStatus() == 0) {
+                            response.sendRedirect("index.jsp?esito=KO2&codice=000");
+                        } else if (user.getStatus() == 1) {
                             redirectToPageByRole(response, request, userId, roleId);
+                            InfoTrack.loginTrack(EncryptionUtil.decrypt(user.getNome()), user);
+                        } else if (user.getStatus() == 2) {
+                            response.sendRedirect("edit_password.jsp");
                         }
 
                     } else {

@@ -64,7 +64,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
         try {
             if (isCreate == true) {
                 creaRichiesta(request, response);
-            }else if (isCheck == true) {
+            } else if (isCheck == true) {
                 checkOreDisponibili(request, response);
             }
         } catch (ServletException | IOException e) {
@@ -83,6 +83,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
             transaction.begin();
 
             Richiesta richiesta = new Richiesta();
+
             Utente utente = (Utente) request.getSession().getAttribute("user");
             richiesta.setUtente(utente);
 
@@ -232,6 +233,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
                 response.setContentType("text/plain;charset=UTF-8");
                 response.sendRedirect("US_gestionale.jsp?esito=OK&codice=001");
                 InfoTrack.richiestaTrackUpdate(EncryptionUtil.decrypt(utente.getNome()), richiesta, utente);
+
             } catch (ServletException | IOException | ParseException e) {
                 logfile.severe(estraiEccezione(e));
 

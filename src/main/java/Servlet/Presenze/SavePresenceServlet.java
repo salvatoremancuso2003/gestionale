@@ -41,10 +41,11 @@ public class SavePresenceServlet extends HttpServlet {
 
         boolean isPresence = Boolean.parseBoolean(request.getParameter("isPresence"));
         boolean isDetails = Boolean.parseBoolean(request.getParameter("isDetails"));
+        boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
 
         try {
             if (isPresence) {
-                savePresence(request, response);
+                savePresence(request, response, isAdmin);
             } else if (isDetails) {
                 getDettagliPresenza(request, response);
             }
@@ -56,19 +57,35 @@ public class SavePresenceServlet extends HttpServlet {
     }
 
     //Metodo salvataggio presenza - TimbroE,TimbroU - modalTimbro Utente's pages
-    protected void savePresence(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void savePresence(HttpServletRequest request, HttpServletResponse response, boolean isAdmin) throws ServletException, IOException {
 
         String tipo = request.getParameter("tipo");
         String modality = request.getParameter("modality");
         String tipoIngresso = "ingresso";
-        if (tipo == null || tipo.isEmpty()) {
-            response.sendRedirect("US_gestionale.jsp?esito=KO5&codice=002");
-            return;
-        }
-        if (tipo.equals(tipoIngresso)) {
-            if (modality == null || modality.isEmpty()) {
+        if (isAdmin) {
+            if (tipo == null || tipo.isEmpty()) {
+                response.sendRedirect("AD_gestionale.jsp?esito=KO5&codice=002");
+                return;
+            }
+
+            if (tipo.equals(tipoIngresso)) {
+                if (modality == null || modality.isEmpty()) {
+                    response.sendRedirect("AD_gestionale.jsp?esito=KO5&codice=002");
+                    return;
+                }
+            }
+        } else {
+
+            if (tipo == null || tipo.isEmpty()) {
                 response.sendRedirect("US_gestionale.jsp?esito=KO5&codice=002");
                 return;
+            }
+
+            if (tipo.equals(tipoIngresso)) {
+                if (modality == null || modality.isEmpty()) {
+                    response.sendRedirect("US_gestionale.jsp?esito=KO5&codice=002");
+                    return;
+                }
             }
         }
 
@@ -79,12 +96,21 @@ public class SavePresenceServlet extends HttpServlet {
         String usName = EncryptionUtil.decrypt(utente.getNome());
 
         TipoPresenza tipoPresenza = null;
+
         if (tipo.equals(tipoIngresso)) {
             tipoPresenza = findTipoPresenzaByEnum(Tipo_presenza_enum.valueOf(modality));
 
-            if (tipoPresenza == null) {
-                response.sendRedirect("US_gestionale.jsp?esito=KO4&codice=002");
-                return;
+            if (isAdmin) {
+                if (tipoPresenza == null) {
+                    response.sendRedirect("AD_gestionale.jsp?esito=KO4&codice=002");
+                    return;
+                }
+            } else {
+
+                if (tipoPresenza == null) {
+                    response.sendRedirect("US_gestionale.jsp?esito=KO4&codice=002");
+                    return;
+                }
             }
         }
 
@@ -92,27 +118,42 @@ public class SavePresenceServlet extends HttpServlet {
         Timestamp currentTimestamp = Timestamp.valueOf(LocalDateTime.now());
         Presenza presenza = new Presenza();
         Presenza lastPresenza = Utility.findLastPresenzaByUserOnDate(user_id, currentDate);
+
         presenza.setUtente(utente);
 
         switch (tipo) {
             case "ingresso":
-                if (lastPresenza != null && lastPresenza.getUscita() == null) {
-                    response.sendRedirect("US_gestionale.jsp?esito=KO2&codice=002");
-                    return;
+                if (isAdmin) {
+                    if (lastPresenza != null && lastPresenza.getUscita() == null) {
+                        response.sendRedirect("AD_gestionale.jsp?esito=KO2&codice=002");
+                        return;
+                    }
+                } else {
+                    if (lastPresenza != null && lastPresenza.getUscita() == null) {
+                        response.sendRedirect("US_gestionale.jsp?esito=KO2&codice=002");
+                        return;
+                    }
                 }
 
-                presenza.setEntrata(currentTimestamp); 
+                presenza.setEntrata(currentTimestamp);
                 presenza.setTipo(tipoPresenza);
                 break;
 
             case "uscita":
-                if (lastPresenza == null || lastPresenza.getEntrata() == null || lastPresenza.getUscita() != null) {
-                    response.sendRedirect("US_gestionale.jsp?esito=KO3&codice=002");
-                    return;
+                if (isAdmin) {
+                    if (lastPresenza == null || lastPresenza.getEntrata() == null || lastPresenza.getUscita() != null) {
+                        response.sendRedirect("AD_gestionale.jsp?esito=KO3&codice=002");
+                        return;
+                    }
+                } else {
+                    if (lastPresenza == null || lastPresenza.getEntrata() == null || lastPresenza.getUscita() != null) {
+                        response.sendRedirect("US_gestionale.jsp?esito=KO3&codice=002");
+                        return;
+                    }
                 }
 
-                lastPresenza.setUscita(currentTimestamp); 
-                presenza = lastPresenza;  
+                lastPresenza.setUscita(currentTimestamp);
+                presenza = lastPresenza;
                 break;
 
             default:
@@ -121,7 +162,11 @@ public class SavePresenceServlet extends HttpServlet {
         }
 
         if (savePresence(presenza)) {
-            response.sendRedirect("US_gestionale.jsp?esito=OK&codice=002&tipo=" + tipo);
+            if (isAdmin) {
+                response.sendRedirect("AD_gestionale.jsp?esito=OK&codice=002&tipo=" + tipo);
+            } else {
+                response.sendRedirect("US_gestionale.jsp?esito=OK&codice=002&tipo=" + tipo);
+            }
             if (tipo.equals("ingresso")) {
                 InfoTrack.presenzaTrackCreated(usName, presenza, utente);
 
@@ -129,7 +174,11 @@ public class SavePresenceServlet extends HttpServlet {
                 InfoTrack.presenzaTrackCreatedSecond(usName, presenza, utente);
             }
         } else {
-            response.sendRedirect("US_gestionale.jsp?esito=KO&codice=002");
+            if (isAdmin) {
+                response.sendRedirect("AD_gestionale.jsp?esito=KO&codice=002");
+            } else {
+                response.sendRedirect("US_gestionale.jsp?esito=KO&codice=002");
+            }
         }
     }
 
@@ -139,11 +188,15 @@ public class SavePresenceServlet extends HttpServlet {
         try {
             emf = Persistence.createEntityManagerFactory("gestionale");
             em = emf.createEntityManager();
-            return em.createQuery("SELECT t FROM TipoPresenza t WHERE t.tipo = :tipo", TipoPresenza.class)
+
+            return em.createQuery("SELECT t FROM TipoPresenza t WHERE t.tipo = :tipo", TipoPresenza.class
+            )
                     .setParameter("tipo", tipoPresenzaEnum)
                     .getSingleResult();
+
         } catch (Exception e) {
-            Logger.getLogger(SavePresenceServlet.class.getName()).log(Level.SEVERE, "Error fetching TipoPresenza", e);
+            Logger.getLogger(SavePresenceServlet.class
+                    .getName()).log(Level.SEVERE, "Error fetching TipoPresenza", e);
             return null;
         } finally {
             if (em != null) {
@@ -172,8 +225,10 @@ public class SavePresenceServlet extends HttpServlet {
         } catch (Exception e) {
             if (em != null && em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
+
             }
-            Logger.getLogger(SavePresenceServlet.class.getName()).log(Level.SEVERE, "Error saving Presenza", e);
+            Logger.getLogger(SavePresenceServlet.class
+                    .getName()).log(Level.SEVERE, "Error saving Presenza", e);
             return false;
         } finally {
             if (em != null) {

@@ -11,6 +11,7 @@ import Entity.Pagina;
 import Entity.Permesso;
 import Entity.Presenza;
 import Entity.Richiesta;
+import Entity.Ruolo;
 import Entity.TipoDocumento;
 import Entity.Utente;
 import Enum.Stato_enum;
@@ -240,6 +241,40 @@ public class Utility {
         return null;
     }
 
+    public static Ruolo findRuoloById(int id) {
+        EntityManagerFactory entityManagerFactory = null;
+        EntityManager entityManager = null;
+
+        try {
+            entityManagerFactory = Persistence.createEntityManagerFactory("gestionale");
+            entityManager = entityManagerFactory.createEntityManager();
+
+            TypedQuery<Ruolo> query = entityManager.createQuery(
+                    "SELECT r FROM Ruolo r WHERE r.id = :id", Ruolo.class
+            )
+                    .setParameter("id", id);
+
+            Ruolo ruolo = query.getSingleResult();
+
+            if (ruolo != null) {
+                return ruolo;
+            }
+
+        } catch (Exception e) {
+            logfile.severe(estraiEccezione(e));
+            return null;
+        } finally {
+            if (entityManager != null) {
+                entityManager.close();
+            }
+            if (entityManagerFactory != null) {
+                entityManagerFactory.close();
+            }
+        }
+
+        return null;
+    }
+
     public static Presenza findPresenzaByUserAndDate(Long userId) {
         EntityManagerFactory entityManagerFactory = null;
         EntityManager entityManager = null;
@@ -343,6 +378,36 @@ public class Utility {
 
             if (!utenti.isEmpty()) {
                 return utenti;
+            }
+
+        } catch (Exception e) {
+            logfile.severe(estraiEccezione(e));
+            return Collections.emptyList();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (emf != null) {
+                emf.close();
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    public static List<Ruolo> getAllRuoli() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
+
+        try {
+            emf = Persistence.createEntityManagerFactory("gestionale");
+            em = emf.createEntityManager();
+            List<Ruolo> tipi = em.createQuery(
+                    "SELECT r FROM Ruolo r ", Ruolo.class
+            ).getResultList();
+
+            if (!tipi.isEmpty()) {
+                return tipi;
             }
 
         } catch (Exception e) {

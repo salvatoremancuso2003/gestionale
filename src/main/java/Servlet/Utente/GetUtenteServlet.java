@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.persistence.TypedQuery;
+import jakarta.servlet.http.HttpSession;
 
 public class GetUtenteServlet extends HttpServlet {
 
@@ -34,14 +35,21 @@ public class GetUtenteServlet extends HttpServlet {
         EntityManager em = emf.createEntityManager();
         try {
             String utenteIdStr = request.getParameter("utente");
+            HttpSession session = request.getSession();
+            String userId = session.getAttribute("userId").toString();
+            String utenteParam = request.getParameter("utente");
 
-            StringBuilder queryString = new StringBuilder("SELECT u FROM Utente u WHERE u.ruolo.id = 2");
+            StringBuilder queryString = new StringBuilder("SELECT u FROM Utente u WHERE u.id != :userId");
 
-            TypedQuery<Utente> query = em.createQuery(queryString.toString(), Utente.class);
+            if (utenteIdStr != null && !utenteIdStr.equals("Qualsiasi")) {
+                queryString.append(" AND u.id = :utenteId");
+            }
+
+            TypedQuery<Utente> query = em.createQuery(queryString.toString(), Utente.class).setParameter("userId", Long.valueOf(userId));
 
             if (utenteIdStr != null && !utenteIdStr.equals("Qualsiasi")) {
                 Long utenteId = Long.parseLong(utenteIdStr);
-                query.setParameter("utenteId", utenteId);
+                query.setParameter("utenteId", Long.valueOf(utenteParam));
             }
 
             List<Utente> utenti = query.getResultList();
@@ -51,6 +59,7 @@ public class GetUtenteServlet extends HttpServlet {
             for (Utente utente : utenti) {
                 JsonObject rc = new JsonObject();
                 rc.addProperty("id", utente.getId());
+                rc.addProperty("ruolo", utente.getRuolo().getNome());
                 if (utente.getNome() != null) {
                     rc.addProperty("nome", EncryptionUtil.decrypt(utente.getNome()));
                 } else {
@@ -78,7 +87,7 @@ public class GetUtenteServlet extends HttpServlet {
                 String actionButton;
                 String estraiPresenze = "<div class='container'>"
                         + "<div class='d-flex'>"
-                        + "<button class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px; color:white;' "
+                        + "<button type='button' class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px; color:white;' "
                         + " onclick='estraiPresenze(" + utente.getId() + ", \"" + EncryptionUtil.decrypt(utente.getNome()) + " " + EncryptionUtil.decrypt(utente.getCognome()) + "\")'>"
                         + "Estrai excel</button>"
                         + "</div>"
@@ -89,7 +98,7 @@ public class GetUtenteServlet extends HttpServlet {
 
                     actionButton = "<div class='container'>"
                             + "<div class='d-flex'>"
-                            + "<button class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px; color:white;' "
+                            + "<button type='button' class='btn Smartoop-btn-standard' style='min-width: 100px; margin-left: 5px; color:white;' "
                             + " onclick='riabilitaUtente(" + utente.getId() + ", \"" + EncryptionUtil.decrypt(utente.getNome()) + " " + EncryptionUtil.decrypt(utente.getCognome()) + "\")'>"
                             + "Riabilita utente</button>"
                             + "</div>"
@@ -122,6 +131,7 @@ public class GetUtenteServlet extends HttpServlet {
                 rc.addProperty("Gestisci", combinedActions);
                 dataArray.add(rc);
             }
+
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             PrintWriter out = response.getWriter();
