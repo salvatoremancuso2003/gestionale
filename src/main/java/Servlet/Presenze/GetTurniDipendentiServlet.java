@@ -313,7 +313,7 @@ public class GetTurniDipendentiServlet extends HttpServlet {
             emf = Persistence.createEntityManagerFactory("gestionale");
             em = emf.createEntityManager();
 
-            List<Utente> utenti = em.createQuery("SELECT u FROM Utente u WHERE u.ruolo.id = 2", Utente.class
+            List<Utente> utenti = em.createQuery("SELECT u FROM Utente u", Utente.class
             ).getResultList();
 
             presenze

@@ -50,8 +50,8 @@ public class GetDipendentiPresenzaServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try {
-            String dataInizio = request.getParameter("dataInizio");
-            String dataFine = request.getParameter("dataFine");
+            String dataInizio = request.getParameter("dataInizio2");
+            String dataFine = request.getParameter("dataFine2");
             String presenzaValue = request.getParameter("presenza");
             String utenteIdParam = request.getParameter("utente");
 
@@ -153,7 +153,7 @@ public class GetDipendentiPresenzaServlet extends HttpServlet {
         try {
             emf = Persistence.createEntityManagerFactory("gestionale");
             em = emf.createEntityManager();
-            List<Utente> utenti = em.createQuery("SELECT u FROM Utente u WHERE u.ruolo.id = 2", Utente.class).getResultList();
+            List<Utente> utenti = em.createQuery("SELECT u FROM Utente u", Utente.class).getResultList();
             return em.createQuery("SELECT p FROM Presenza p WHERE p.utente IN :utenti", Presenza.class)
                     .setParameter("utenti", utenti)
                     .getResultList();

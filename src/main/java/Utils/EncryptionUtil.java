@@ -63,18 +63,18 @@ public class EncryptionUtil {
         return encryptedValues;
     }
 
-    // Metodo per cifrare i byte del file e restituire i byte cifrati
-    public static byte[] encryptBase64(byte[] inputBytes) {
-        try {
-            SecretKey key = getKeyFromString(KEYS.get(0));
-            Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            return cipher.doFinal(inputBytes);
-        } catch (Exception e) {
-            logfile.log(Level.SEVERE, EncryptionUtil.class.getName(), "Encryption failed " + e.getMessage());
-            return null;
-        }
-    }
+//    // Metodo per cifrare i byte del file e restituire i byte cifrati
+//    public static byte[] encryptBase64(byte[] inputBytes) {
+//        try {
+//            SecretKey key = getKeyFromString(KEYS.get(0));
+//            Cipher cipher = Cipher.getInstance(ALGORITHM);
+//            cipher.init(Cipher.ENCRYPT_MODE, key);
+//            return cipher.doFinal(inputBytes);
+//        } catch (Exception e) {
+//            logfile.log(Level.SEVERE, EncryptionUtil.class.getName(), "Encryption failed " + e.getMessage());
+//            return null;
+//        }
+//    }
 
     // Decrypt the input data
     public static String decrypt(String encryptedInput) {
@@ -101,21 +101,21 @@ public class EncryptionUtil {
         return "DATO NON DECRIPTABILE";
     }
 
-    // Decrypt the Base64 encoded data and return the decrypted byte array
-    public static byte[] decryptBase64(byte[] encryptedBytes) {
-        for (String keyStr : KEYS) {
-            try {
-                SecretKey key = getKeyFromString(keyStr);
-                Cipher cipher = Cipher.getInstance(ALGORITHM);
-                cipher.init(Cipher.DECRYPT_MODE, key);
-                return cipher.doFinal(Base64.getDecoder().decode(encryptedBytes));
-            } catch (Exception e) {
-                logfile.log(Level.SEVERE, EncryptionUtil.class.getName(), "Decryption failed with this key, trying another..." + e.getMessage());
-            }
-        }
-        logfile.log(Level.SEVERE, EncryptionUtil.class.getName(), "Decryption failed for all keys.");
-        return new byte[0];
-    }
+//    // Decrypt the Base64 encoded data and return the decrypted byte array
+//    public static byte[] decryptBase64(byte[] encryptedBytes) {
+//        for (String keyStr : KEYS) {
+//            try {
+//                SecretKey key = getKeyFromString(keyStr);
+//                Cipher cipher = Cipher.getInstance(ALGORITHM);
+//                cipher.init(Cipher.DECRYPT_MODE, key);
+//                return cipher.doFinal(Base64.getDecoder().decode(encryptedBytes));
+//            } catch (Exception e) {
+//                logfile.log(Level.SEVERE, EncryptionUtil.class.getName(), "Decryption failed with this key, trying another..." + e.getMessage());
+//            }
+//        }
+//        logfile.log(Level.SEVERE, EncryptionUtil.class.getName(), "Decryption failed for all keys.");
+//        return new byte[0];
+//    }
 
     // Convert a string key to SecretKey
     public static SecretKey getKeyFromString(String keyStr) throws Exception {

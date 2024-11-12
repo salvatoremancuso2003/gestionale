@@ -266,6 +266,7 @@ if (esito !== null && codice !== null) {
         esitoModalBody.textContent = "Utente creato con successo!";
         esitoModalBody.style.color = '#198754';
         esitoModalHeader.style.background = '#198754';
+        esitoModalHeader.style.color = 'white';
         esitoModalHeader.textContent = "Operazione effettuata con successo!";
         esitoModalButton.style.backgroundColor = '#198754';
         esitoModalButton.style.borderColor = '#198754';
@@ -367,6 +368,17 @@ if (esito !== null && codice !== null) {
         esitoModalHeader.style.color = 'white';
         esitoModalHeader.textContent = "ERRATO";
         esitoModalButton.classList.add('Smartoop-btn-error');
+        esitoModal.show();
+        redirect();
+    } else if (esito === 'OK' && codice === '009') {
+        esitoModalBody.textContent = "Richiesta salvata con successo!";
+        esitoModalBody.style.color = '#198754';
+        esitoModalHeader.style.background = '#198754';
+        esitoModalHeader.style.color = 'white';
+        esitoModalHeader.textContent = "Operazione effettuata con successo!";
+        esitoModalButton.style.backgroundColor = '#198754';
+        esitoModalButton.style.borderColor = '#198754';
+        esitoModalButton.style.color = 'white';
         esitoModal.show();
         redirect();
     } else if (esito === 'KO' & codice === '009') {

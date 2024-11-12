@@ -6,10 +6,16 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="Utils.Utility"%>
+<%@page import="Utils.EncryptionUtil"%>
 <%@page import="Entity.Utente"%>
+<%@page import="Entity.Permesso"%>
+<%@page import="Entity.Presenza"%>
+<%@page import="Entity.Ruolo"%>
 <%@page import="java.time.LocalDate"%>
 <%@page import="java.time.ZoneId"%>
 <%@page import="java.util.Date"%>
+<%@page import="java.util.List"%>
+<%@ page import="java.text.SimpleDateFormat" %>
 
 <%    
     String userId = Utility.checkAttribute(session, "userId");
@@ -67,14 +73,44 @@
                                 <span style="padding-left: 4px">HOME</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link  d-flex align-items-center" href="AD_calendar.jsp">
+                        <!-- Dropdown CALENDARIO -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
                                 <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/>
                                 <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
                                 </svg>
                                 <span style="padding-left: 4px">CALENDARIO</span>
                             </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
+                                <li class="border-bottom">
+                                    <a class="nav-link  d-flex align-items-center" href="AD_calendar.jsp">
+                                        <svg xmlns="http://www.w3.org/2000/svg" style="padding-left: 10px; " width="25" height="25" fill="currentColor" class="bi bi-calendar3 SmartOOP-text-standard" viewBox="0 0 16 16">
+                                        <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/>
+                                        <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                                        </svg>
+                                        <span style="padding-left: 10px; white-space: nowrap" class="SmartOOP-text-standard">CALENDARIO</span>
+                                    </a>
+                                </li>
+                                <li class="border-bottom">
+                                    <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#timbroModal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" style="padding-left: 10px; " width="25" height="25" fill="currentColor" class="bi bi-check-square SmartOOP-text-standard" viewBox="0 0 16 16">
+                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                        <path d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/>
+                                        </svg>
+                                        <span style="padding-left: 10px; white-space: nowrap" class="SmartOOP-text-standard">TIMBRO GIORNALIERO</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#richiediPermessoModal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" style="padding-left: 10px;" width="25" height="25" fill="currentColor" class="bi bi-alarm SmartOOP-text-standard" viewBox="0 0 16 16">
+                                        <path d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9z"/>
+                                        <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1zm1.038 3.018a6 6 0 0 1 .924 0 6 6 0 1 1-.924 0M0 3.5c0 .753.333 1.429.86 1.887A8.04 8.04 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5M13.5 1c-.753 0-1.429.333-1.887.86a8.04 8.04 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1"/>
+                                        </svg>
+                                        <span style="padding-left: 10px; white-space: nowrap" class="SmartOOP-text-standard">RICHIEDI PERMESSO</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center" href="AD_presenze.jsp">
@@ -119,7 +155,7 @@
                             <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
                             <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
                             </svg>
-                            <%= EncryptionUtil.decrypt(utente.getNome().toUpperCase()) + " " + EncryptionUtil.decrypt(utente.getCognome().toUpperCase()) + " - " + Utility.tipoUtente(utente).toUpperCase() %>
+                            <%= EncryptionUtil.decrypt(utente.getNome()).toUpperCase() + " " + EncryptionUtil.decrypt(utente.getCognome()).toUpperCase() + " - " + Utility.tipoUtente(utente).toUpperCase() %>
                         </span>
                         <button type="button" class="btn Smartoop-btn-outline-light" id="logoutButton" onclick="logout()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
@@ -171,6 +207,7 @@
                         <label for="email" class="form-label SmartOOP-text-standard" style="font-weight: bold">Email:</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="numero_di_telefono" class="form-label SmartOOP-text-standard" style="font-weight: bold">Numero di telefono</label>
                         <div class="input-group">
@@ -197,6 +234,17 @@
                             }
                         });
                     </script>
+
+                    <% List <Ruolo> AllRuoli = Utility.getAllRuoli();%>
+                    <div class="mb-3">
+                        <label for="ruolo" class="form-label">Tipo di ruolo</label>
+                        <select class="form-select" id="ruolo" name="ruolo" required>
+                            <option selected="" disabled>Seleziona ruolo</option>
+                            <% for (Ruolo r : AllRuoli) { %>
+                            <option value="<%= r.getId() %>"><%= r.getNome() %></option>
+                            <% } %>
+                        </select>
+                    </div>
 
                     <div class="mb-3">
                         <label for="ore_lavorative" class="form-label SmartOOP-text-standard" style="font-weight: bold">Ore contratto</label>
@@ -232,26 +280,46 @@
                     </div>
                 </form>
 
-                <div class="table-responsive">
-                    <table id="UtenteTable" class="table table-striped table-hover display-responsive table-bordered" style="width:100%; white-space: nowrap">
-                        <thead>
-                            <tr>
-                                <th class="SmartOOP-text-standard">Id</th>
-                                <th class="SmartOOP-text-standard">Nome </th>
-                                <th class="SmartOOP-text-standard">Cognome </th>
-                                <th class="SmartOOP-text-standard">Email </th>
-                                <th class="SmartOOP-text-standard">Numero </th>
-                                <th class="SmartOOP-text-standard">Ferie disponibili </th>
-                                <th class="SmartOOP-text-standard">Ore disponibili </th>
-                                <th class="SmartOOP-text-standard">Ore contratto </th>
-                                <th class="SmartOOP-text-standard">Stato </th>
-                                <th class="SmartOOP-text-standard">Gestisci</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
+
+                <hr>
+                <form action="GetUtenteServlet" method="post">
+
+                    <div class="col-md-12 text-center">
+                        <% List <Utente> utenti = Utility.getAllUtenti(); %>
+                        <div class="form-group">
+                            <label for="utente" class="form-label SmartOOP-text-standard" style="font-weight: bold">RICERCA UTENTE</label>
+                            <select id="utente" class="form-control" name="utente">
+                                <option selected="" value="Qualsiasi">Qualsiasi</option>
+                                <% for (Utente u : utenti) {%>
+                                <option value="<%=u.getId()%>"><%= EncryptionUtil.decrypt(u.getNome()) + " " + EncryptionUtil.decrypt(u.getCognome()) + " - " + u.getRuolo().getNome()%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                            <br>
+
+                    <div class="table-responsive">
+                        <table id="UtenteTable" class="table table-striped table-hover display-responsive table-bordered" style="width:100%; white-space: nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="SmartOOP-text-standard">Id</th>
+                                    <th class="SmartOOP-text-standard">Ruolo</th>
+                                    <th class="SmartOOP-text-standard">Nome </th>
+                                    <th class="SmartOOP-text-standard">Cognome </th>
+                                    <th class="SmartOOP-text-standard">Email </th>
+                                    <th class="SmartOOP-text-standard">Numero </th>
+                                    <th class="SmartOOP-text-standard">Ferie disponibili </th>
+                                    <th class="SmartOOP-text-standard">Ore disponibili </th>
+                                    <th class="SmartOOP-text-standard">Ore contratto </th>
+                                    <th class="SmartOOP-text-standard">Stato </th>
+                                    <th class="SmartOOP-text-standard">Gestisci</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -279,7 +347,7 @@
         <div class="modal fade" id="confermaRiabilitazioneModal" tabindex="-1" aria-labelledby="confermaRiabilitazioneModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header bg-SmartOOP-standard text-white">
+                    <div class="modal-header Smartoop-bg-standard text-white">
                         <h5 class="modal-title" id="confermaEliminazioneModalLabel">Conferma Riabilitazione</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -312,6 +380,248 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="esitoModal" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" id="modal-header">
+                        <h5 class="modal-title" id="esitoModalLabel">Esito Operazione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="esitoModalBody">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="esitoModalButton" class="btn" data-bs-dismiss="modal">Chiudi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- Modal Richiesta Permesso-->
+        <div class="modal fade" id="richiediPermessoModal" tabindex="-1" aria-labelledby="richiediPermessoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header Smartoop-bg-standard">
+                        <h5 class="modal-title text-white" id="richiediPermessoLabel">Richiesta Permesso</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="richiediPermessoForm" method="POST" action="RichiestaPermessoServlet" enctype="multipart/form-data">
+                            <input type="hidden" id="isCreate" name="isCreate" value="false">
+                            <input type="hidden" id="isCheck" name="isCheck" value="true">
+                            <% List <Permesso> AllTipiPermesso = Utility.getAllPermessi();%>
+                            <div class="mb-3">
+                                <label for="tipoPermesso" class="form-label">Tipo di Permesso</label>
+                                <select class="form-select" id="tipoPermesso" name="tipo_permesso" required>
+                                    <option selected="" disabled>Seleziona permesso</option>
+                                    <% for (Permesso p : AllTipiPermesso) { %>
+                                    <option value="<%= p.getCodice() %>"><%= p.getDescrizione() %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="dataInizio" class="form-label">Data Inizio</label>
+                                <input type="datetime-local" class="form-control" id="dataInizio" name="data_inizio" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="dataFine" class="form-label">Data Fine</label>
+                                <input type="datetime-local" class="form-control" id="dataFine" name="data_fine" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="note" class="form-label">Note</label>
+                                <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="allegato" class="form-label">Allegato (opzionale)</label>
+                                <input class="form-control" type="file" id="allegato" name="allegato">
+                            </div>
+                            <button type="submit" class="btn Smartoop-btn-standard" id="esitoModalButton1" >Invia Richiesta</button>
+                            <button type="button" class="btn btn-secondary" id="esitoModalButton2" style="display: none;" onclick="invioRichiestaSenzaOre()">Procedi senza modificare ore</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Timbratura -->
+        <form method="POST" action="SavePresenceServlet">
+            <input type="hidden" id="isPresence" name="isPresence" value="true">
+            <input type="hidden" id="isAdmin" name="isAdmin" value="true">
+            <div class="modal fade" id="timbroModal" tabindex="-1" aria-labelledby="timbroModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header Smartoop-bg-standard">
+                            <h5 class="modal-title text-white" id="timbroModalLabel">Timbro Giornaliero</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <%
+                            Long userIdLong = Long.parseLong(userId);
+                            List<Presenza> presenze = Utility.findPresenzeByUserAndDate(userIdLong);
+                    
+                            boolean ultimoIngressoSenzaUscita = false;
+                            if (!presenze.isEmpty()) {
+                                Presenza lastPresenza = presenze.get(presenze.size() - 1);
+                                ultimoIngressoSenzaUscita = lastPresenza.getEntrata() != null && lastPresenza.getUscita() == null;
+                            }
+                        %>
+
+                        <div class="modal-body">
+                            <% if (presenze.isEmpty() || !ultimoIngressoSenzaUscita) { %>
+                            <!-- Se non ci sono ingressi o l'ultimo ingresso ha già un'uscita -->
+                            <p>Seleziona tipo di ingresso</p>
+                            <hr>
+
+                            <div class="container d-flex justify-content-evenly">
+                                <!-- Ingresso -->
+                                <input class="form-check-input" type="radio" name="tipo" id="ingresso" value="ingresso" checked hidden>
+                                <!-- Modalità di ingresso (in presenza o da remoto) -->
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="modality" id="ing_presenza" value="SEDE" required>
+                                    <label class="form-check-label" for="ing_presenza">In Presenza</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="modality" id="ing_remoto" value="REMOTO" required>
+                                    <label class="form-check-label" for="ing_remoto">Da Remoto</label>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <p>Premi il pulsante qui sotto per registrare l'orario di attivazione della giornata di lavoro:</p>
+                            <button type="submit" id="btnRegistrareOra" class="btn Smartoop-btn-standard">Registra Ingresso</button>
+
+                            <% } else if (ultimoIngressoSenzaUscita) { %>
+                            <!-- Se l'ultimo ingresso non ha ancora un'uscita -->
+                            <p>Hai già registrato un ingresso. Seleziona l'uscita:</p>
+
+                            <!-- Uscita -->
+                            <hr>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo" id="uscita" value="uscita" required>
+                                <label class="form-check-label" for="uscita">Uscita</label>
+                            </div>
+
+                            <hr>
+                            <p>Premi il pulsante qui sotto per registrare l'uscita:</p>
+                            <button type="submit" id="btnRegistrareOra" class="btn Smartoop-btn-standard">Registra Uscita</button>
+
+                            <% } %>
+
+                            <hr>
+                            <h5 class="text-center">Storico di oggi:</h5>
+                            <hr>
+
+                            <% 
+                                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                            %>
+
+                            <div class="container-fluid">
+                                <div class="row justify-content-center">
+                                    <div class="col-12 text-center">
+                                        <%  
+                                        for (Presenza p : presenze) {
+                                            if (p.getEntrata() != null) {
+                                                String entrataFormatted = timeFormat.format(p.getEntrata()); 
+                                        %>
+                                        <p><strong class="SmartOOP-text-standard">Entrata:</strong> <%= entrataFormatted %></p> 
+                                        <% 
+                                            }
+                                            if (p.getUscita() != null) {
+                                                String uscitaFormatted = timeFormat.format(p.getUscita());
+                                        %>
+                                        <p><strong class="text-secondary">Uscita:</strong> <%= uscitaFormatted %></p>
+                                        <% 
+                                            }
+                                        } 
+                                        %>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="modal fade" id="esitoModal" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" id="modal-header">
+                        <h5 class="modal-title" id="esitoModalLabel">Esito Operazione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="esitoModalBody">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="esitoModalButton" class="btn" data-bs-dismiss="modal">Chiudi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="modal fade" id="esitoModal" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" id="modal-header">
+                        <h5 class="modal-title" id="esitoModalLabel">Esito Operazione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="esitoModalBody">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="esitoModalButton" class="btn" data-bs-dismiss="modal">Chiudi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade modal-xl" id="errorDateModal" tabindex="-1" aria-labelledby="errorDateModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header Smartoop-bg-standard" id="modal-header">
+                        <h5 class="modal-title" id="errorDateModalLabel" style="color: white">Operazione non disponibile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="esitoModalBody">
+                        Non puoi selezionare sabato o domenica. Riprova.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="errorDateModalButton" class="btn Smartoop-btn-standard" data-bs-dismiss="modal">Chiudi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESITO MODAL INS  -->
+        <div class="modal fade modal-xl" id="esitoModalIns" tabindex="-1" aria-labelledby="esitoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" id="modal-headerIns">
+                        <h5 class="modal-title" id="esitoModalLabelIns">Esito Operazione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="esitoModalBodyIns">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="esitoModalButtonIns" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                        <button type="button" class="btn Smartoop-btn-outline-success" id="esitoModalButton2" onclick="invioRichiestaSenzaOre()">Procedi senza modificare ore</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <br>
         <!-- Footer -->
@@ -338,299 +648,289 @@
 
 
         <script>
-                        $(document).ready(function () {
-                            var table = $('#UtenteTable').DataTable({
-                                "ajax": {
-                                    "url": "GetUtenteServlet",
-                                    "type": "POST",
-                                    "data": function (d) {
-                                        d.utente = $("#utente").val();
-                                    },
-                                    "charset": "utf-8",
-                                    "dataSrc": "",
-                                    "dataType": "json"
-                                },
-                                "columns": [
-                                    {"data": "id"},
-                                    {"data": "nome"},
-                                    {"data": "cognome"},
-                                    {"data": "email"},
-                                    {"data": "numero"},
-                                    {"data": "ferie"},
-                                    {"data": "ore"},
-                                    {"data": "ore_contratto"},
-                                    {"data": "stato"},
-                                    {"data": "Gestisci"}
-                                ],
-                                responsive: true,
-                                language: {
-                                    "infoFiltered": "(filtrati da _MAX_ elementi totali)",
-                                    "infoThousands": ".",
-                                    "loadingRecords": "Caricamento...",
-                                    "processing": "Elaborazione...",
-                                    "search": "Cerca:",
-                                    "paginate": {
-                                        "first": "Inizio",
-                                        "previous": "Precedente",
-                                        "next": "Successivo",
-                                        "last": "Fine"
-                                    },
-                                    "aria": {
-                                        "sortAscending": ": attiva per ordinare la colonna in ordine crescente",
-                                        "sortDescending": ": attiva per ordinare la colonna in ordine decrescente"
-                                    },
-                                    "autoFill": {
-                                        "cancel": "Annulla",
-                                        "fill": "Riempi tutte le celle con <i>%d<\/i>",
-                                        "fillHorizontal": "Riempi celle orizzontalmente",
-                                        "fillVertical": "Riempi celle verticalmente"
-                                    },
-                                    "buttons": {
-                                        "collection": "Collezione <span class=\"ui-button-icon-primary ui-icon ui-icon-triangle-1-s\"><\/span>",
-                                        "colvis": "Visibilità Colonna",
-                                        "colvisRestore": "Ripristina visibilità",
-                                        "copy": "Copia",
-                                        "copyKeys": "Premi ctrl o u2318 + C per copiare i dati della tabella nella tua clipboard di sistema.<br \/><br \/>Per annullare, clicca questo messaggio o premi ESC.",
-                                        "copySuccess": {
-                                            "1": "Copiata 1 riga nella clipboard",
-                                            "_": "Copiate %d righe nella clipboard"
+                            $(document).ready(function () {
+                                var table = $('#UtenteTable').DataTable({
+                                    "ajax": {
+                                        "url": "GetUtenteServlet",
+                                        "type": "POST",
+                                        "data": function (d) {
+                                            d.utente = $("#utente").val();
                                         },
-                                        "copyTitle": "Copia nella Clipboard",
-                                        "csv": "CSV",
-                                        "excel": "Excel",
-                                        "pageLength": {
-                                            "-1": "Mostra tutte le righe",
-                                            "_": "Mostra %d righe"
-                                        },
-                                        "pdf": "PDF",
-                                        "print": "Stampa",
-                                        "createState": "Crea stato",
-                                        "removeAllStates": "Rimuovi tutti gli stati",
-                                        "removeState": "Rimuovi",
-                                        "renameState": "Rinomina",
-                                        "savedStates": "Salva stato",
-                                        "stateRestore": "Ripristina stato",
-                                        "updateState": "Aggiorna"
+                                        "charset": "utf-8",
+                                        "dataSrc": "",
+                                        "dataType": "json"
                                     },
-                                    "emptyTable": "Nessun dato disponibile nella tabella",
-                                    "info": "Risultati da _START_ a _END_ di _TOTAL_ elementi",
-                                    "infoEmpty": "Risultati da 0 a 0 di 0 elementi",
-                                    "lengthMenu": "Mostra _MENU_ elementi",
-                                    "searchBuilder": {
-                                        "add": "Aggiungi Condizione",
-                                        "button": {
-                                            "0": "Generatore di Ricerca",
-                                            "_": "Generatori di Ricerca (%d)"
+                                    "columns": [
+                                        {"data": "id"},
+                                        {"data": "ruolo"},
+                                        {"data": "nome"},
+                                        {"data": "cognome"},
+                                        {"data": "email"},
+                                        {"data": "numero"},
+                                        {"data": "ferie"},
+                                        {"data": "ore"},
+                                        {"data": "ore_contratto"},
+                                        {"data": "stato"},
+                                        {"data": "Gestisci"}
+                                    ],
+                                    responsive: true,
+                                    language: {
+                                        "infoFiltered": "(filtrati da _MAX_ elementi totali)",
+                                        "infoThousands": ".",
+                                        "loadingRecords": "Caricamento...",
+                                        "processing": "Elaborazione...",
+                                        "search": "Cerca:",
+                                        "paginate": {
+                                            "first": "Inizio",
+                                            "previous": "Precedente",
+                                            "next": "Successivo",
+                                            "last": "Fine"
                                         },
-                                        "clearAll": "Pulisci Tutto",
-                                        "condition": "Condizione",
-                                        "conditions": {
-                                            "date": {
-                                                "after": "Dopo",
-                                                "before": "Prima",
-                                                "between": "Tra",
-                                                "empty": "Vuoto",
-                                                "equals": "Uguale A",
-                                                "not": "Non",
-                                                "notBetween": "Non Tra",
-                                                "notEmpty": "Non Vuoto"
+                                        "aria": {
+                                            "sortAscending": ": attiva per ordinare la colonna in ordine crescente",
+                                            "sortDescending": ": attiva per ordinare la colonna in ordine decrescente"
+                                        },
+                                        "autoFill": {
+                                            "cancel": "Annulla",
+                                            "fill": "Riempi tutte le celle con <i>%d<\/i>",
+                                            "fillHorizontal": "Riempi celle orizzontalmente",
+                                            "fillVertical": "Riempi celle verticalmente"
+                                        },
+                                        "buttons": {
+                                            "collection": "Collezione <span class=\"ui-button-icon-primary ui-icon ui-icon-triangle-1-s\"><\/span>",
+                                            "colvis": "Visibilità Colonna",
+                                            "colvisRestore": "Ripristina visibilità",
+                                            "copy": "Copia",
+                                            "copyKeys": "Premi ctrl o u2318 + C per copiare i dati della tabella nella tua clipboard di sistema.<br \/><br \/>Per annullare, clicca questo messaggio o premi ESC.",
+                                            "copySuccess": {
+                                                "1": "Copiata 1 riga nella clipboard",
+                                                "_": "Copiate %d righe nella clipboard"
                                             },
-                                            "number": {
-                                                "between": "Tra",
-                                                "empty": "Vuoto",
-                                                "equals": "Uguale A",
-                                                "gt": "Maggiore Di",
-                                                "gte": "Maggiore O Uguale A",
-                                                "lt": "Minore Di",
-                                                "lte": "Minore O Uguale A",
-                                                "not": "Non",
-                                                "notBetween": "Non Tra",
-                                                "notEmpty": "Non Vuoto"
+                                            "copyTitle": "Copia nella Clipboard",
+                                            "csv": "CSV",
+                                            "excel": "Excel",
+                                            "pageLength": {
+                                                "-1": "Mostra tutte le righe",
+                                                "_": "Mostra %d righe"
                                             },
-                                            "string": {
-                                                "contains": "Contiene",
-                                                "empty": "Vuoto",
-                                                "endsWith": "Finisce Con",
-                                                "equals": "Uguale A",
-                                                "not": "Non",
-                                                "notEmpty": "Non Vuoto",
-                                                "startsWith": "Inizia Con",
-                                                "notContains": "Non Contiene",
-                                                "notStartsWith": "Non Inizia Con",
-                                                "notEndsWith": "Non Finisce Con"
+                                            "pdf": "PDF",
+                                            "print": "Stampa",
+                                            "createState": "Crea stato",
+                                            "removeAllStates": "Rimuovi tutti gli stati",
+                                            "removeState": "Rimuovi",
+                                            "renameState": "Rinomina",
+                                            "savedStates": "Salva stato",
+                                            "stateRestore": "Ripristina stato",
+                                            "updateState": "Aggiorna"
+                                        },
+                                        "emptyTable": "Nessun dato disponibile nella tabella",
+                                        "info": "Risultati da _START_ a _END_ di _TOTAL_ elementi",
+                                        "infoEmpty": "Risultati da 0 a 0 di 0 elementi",
+                                        "lengthMenu": "Mostra _MENU_ elementi",
+                                        "searchBuilder": {
+                                            "add": "Aggiungi Condizione",
+                                            "button": {
+                                                "0": "Generatore di Ricerca",
+                                                "_": "Generatori di Ricerca (%d)"
                                             },
-                                            "array": {
-                                                "equals": "Uguale A",
-                                                "empty": "Vuoto",
-                                                "contains": "Contiene",
-                                                "not": "Non",
-                                                "notEmpty": "Non Vuoto",
-                                                "without": "Senza"
+                                            "clearAll": "Pulisci Tutto",
+                                            "condition": "Condizione",
+                                            "conditions": {
+                                                "date": {
+                                                    "after": "Dopo",
+                                                    "before": "Prima",
+                                                    "between": "Tra",
+                                                    "empty": "Vuoto",
+                                                    "equals": "Uguale A",
+                                                    "not": "Non",
+                                                    "notBetween": "Non Tra",
+                                                    "notEmpty": "Non Vuoto"
+                                                },
+                                                "number": {
+                                                    "between": "Tra",
+                                                    "empty": "Vuoto",
+                                                    "equals": "Uguale A",
+                                                    "gt": "Maggiore Di",
+                                                    "gte": "Maggiore O Uguale A",
+                                                    "lt": "Minore Di",
+                                                    "lte": "Minore O Uguale A",
+                                                    "not": "Non",
+                                                    "notBetween": "Non Tra",
+                                                    "notEmpty": "Non Vuoto"
+                                                },
+                                                "string": {
+                                                    "contains": "Contiene",
+                                                    "empty": "Vuoto",
+                                                    "endsWith": "Finisce Con",
+                                                    "equals": "Uguale A",
+                                                    "not": "Non",
+                                                    "notEmpty": "Non Vuoto",
+                                                    "startsWith": "Inizia Con",
+                                                    "notContains": "Non Contiene",
+                                                    "notStartsWith": "Non Inizia Con",
+                                                    "notEndsWith": "Non Finisce Con"
+                                                },
+                                                "array": {
+                                                    "equals": "Uguale A",
+                                                    "empty": "Vuoto",
+                                                    "contains": "Contiene",
+                                                    "not": "Non",
+                                                    "notEmpty": "Non Vuoto",
+                                                    "without": "Senza"
+                                                }
+                                            },
+                                            "data": "Dati",
+                                            "deleteTitle": "Elimina regola filtro",
+                                            "leftTitle": "Criterio di Riduzione Rientro",
+                                            "logicAnd": "E",
+                                            "logicOr": "O",
+                                            "rightTitle": "Criterio di Aumento Rientro",
+                                            "title": {
+                                                "0": "Generatore di Ricerca",
+                                                "_": "Generatori di Ricerca (%d)"
+                                            },
+                                            "value": "Valore"
+                                        },
+                                        "searchPanes": {
+                                            "clearMessage": "Pulisci Tutto",
+                                            "collapse": {
+                                                "0": "Pannello di Ricerca",
+                                                "_": "Pannelli di Ricerca (%d)"
+                                            },
+                                            "count": "{total}",
+                                            "countFiltered": "{shown} ({total})",
+                                            "emptyPanes": "Nessun Pannello di Ricerca",
+                                            "loadMessage": "Caricamento Pannello di Ricerca",
+                                            "title": "Filtri Attivi - %d",
+                                            "showMessage": "Mostra tutto",
+                                            "collapseMessage": "Espandi tutto"
+                                        },
+                                        "select": {
+                                            "cells": {
+                                                "1": "1 cella selezionata",
+                                                "_": "%d celle selezionate"
+                                            },
+                                            "columns": {
+                                                "1": "1 colonna selezionata",
+                                                "_": "%d colonne selezionate"
+                                            },
+                                            "rows": {
+                                                "1": "1 riga selezionata",
+                                                "_": "%d righe selezionate"
                                             }
                                         },
-                                        "data": "Dati",
-                                        "deleteTitle": "Elimina regola filtro",
-                                        "leftTitle": "Criterio di Riduzione Rientro",
-                                        "logicAnd": "E",
-                                        "logicOr": "O",
-                                        "rightTitle": "Criterio di Aumento Rientro",
-                                        "title": {
-                                            "0": "Generatore di Ricerca",
-                                            "_": "Generatori di Ricerca (%d)"
+                                        "zeroRecords": "Nessun elemento corrispondente trovato",
+                                        "datetime": {
+                                            "amPm": [
+                                                "am",
+                                                "pm"
+                                            ],
+                                            "hours": "ore",
+                                            "minutes": "minuti",
+                                            "next": "successivo",
+                                            "previous": "precedente",
+                                            "seconds": "secondi",
+                                            "unknown": "sconosciuto",
+                                            "weekdays": [
+                                                "Dom",
+                                                "Lun",
+                                                "Mar",
+                                                "Mer",
+                                                "Gio",
+                                                "Ven",
+                                                "Sab"
+                                            ],
+                                            "months": [
+                                                "Gennaio",
+                                                "Febbraio",
+                                                "Marzo",
+                                                "Aprile",
+                                                "Maggio",
+                                                "Giugno",
+                                                "Luglio",
+                                                "Agosto",
+                                                "Settembre",
+                                                "Ottobre",
+                                                "Novembre",
+                                                "Dicembre"
+                                            ]
                                         },
-                                        "value": "Valore"
-                                    },
-                                    "searchPanes": {
-                                        "clearMessage": "Pulisci Tutto",
-                                        "collapse": {
-                                            "0": "Pannello di Ricerca",
-                                            "_": "Pannelli di Ricerca (%d)"
+                                        "editor": {
+                                            "close": "Chiudi",
+                                            "create": {
+                                                "button": "Nuovo",
+                                                "submit": "Aggiungi",
+                                                "title": "Aggiungi nuovo elemento"
+                                            },
+                                            "edit": {
+                                                "button": "Modifica",
+                                                "submit": "Modifica",
+                                                "title": "Modifica elemento"
+                                            },
+                                            "error": {
+                                                "system": "Errore del sistema."
+                                            },
+                                            "multi": {
+                                                "info": "Gli elementi selezionati contengono valori diversi. Per modificare e impostare tutti gli elementi per questa selezione allo stesso valore, premi o clicca qui, altrimenti ogni cella manterrà il suo valore attuale.",
+                                                "noMulti": "Questa selezione può essere modificata individualmente, ma non se fa parte di un gruppo.",
+                                                "restore": "Annulla le modifiche",
+                                                "title": "Valori multipli"
+                                            },
+                                            "remove": {
+                                                "button": "Rimuovi",
+                                                "confirm": {
+                                                    "_": "Sei sicuro di voler cancellare %d righe?",
+                                                    "1": "Sei sicuro di voler cancellare 1 riga?"
+                                                },
+                                                "submit": "Rimuovi",
+                                                "title": "Rimuovi"
+                                            }
                                         },
-                                        "count": "{total}",
-                                        "countFiltered": "{shown} ({total})",
-                                        "emptyPanes": "Nessun Pannello di Ricerca",
-                                        "loadMessage": "Caricamento Pannello di Ricerca",
-                                        "title": "Filtri Attivi - %d",
-                                        "showMessage": "Mostra tutto",
-                                        "collapseMessage": "Espandi tutto"
-                                    },
-                                    "select": {
-                                        "cells": {
-                                            "1": "1 cella selezionata",
-                                            "_": "%d celle selezionate"
-                                        },
-                                        "columns": {
-                                            "1": "1 colonna selezionata",
-                                            "_": "%d colonne selezionate"
-                                        },
-                                        "rows": {
-                                            "1": "1 riga selezionata",
-                                            "_": "%d righe selezionate"
+                                        "thousands": ".",
+                                        "decimal": ",",
+                                        "stateRestore": {
+                                            "creationModal": {
+                                                "button": "Crea",
+                                                "columns": {
+                                                    "search": "Colonna Cerca",
+                                                    "visible": "Colonna Visibilità"
+                                                },
+                                                "name": "Nome:",
+                                                "order": "Ordinamento",
+                                                "paging": "Paginazione",
+                                                "scroller": "Scorri posizione",
+                                                "search": "Ricerca",
+                                                "searchBuilder": "Form di Ricerca",
+                                                "select": "Seleziona",
+                                                "title": "Crea nuovo Stato",
+                                                "toggleLabel": "Includi:"
+                                            },
+                                            "duplicateError": "Nome stato già presente",
+                                            "emptyError": "Il nome è obbligatorio",
+                                            "emptyStates": "Non ci sono stati salvati",
+                                            "removeConfirm": "Sei sicuro di eliminare lo Stato %s?",
+                                            "removeError": "Errore durante l'eliminazione dello Stato",
+                                            "removeJoiner": "e",
+                                            "removeSubmit": "Elimina",
+                                            "removeTitle": "Elimina Stato",
+                                            "renameButton": "Rinomina",
+                                            "renameLabel": "Nuovo nome per %s:",
+                                            "renameTitle": "Rinomina Stato"
                                         }
                                     },
-                                    "zeroRecords": "Nessun elemento corrispondente trovato",
-                                    "datetime": {
-                                        "amPm": [
-                                            "am",
-                                            "pm"
-                                        ],
-                                        "hours": "ore",
-                                        "minutes": "minuti",
-                                        "next": "successivo",
-                                        "previous": "precedente",
-                                        "seconds": "secondi",
-                                        "unknown": "sconosciuto",
-                                        "weekdays": [
-                                            "Dom",
-                                            "Lun",
-                                            "Mar",
-                                            "Mer",
-                                            "Gio",
-                                            "Ven",
-                                            "Sab"
-                                        ],
-                                        "months": [
-                                            "Gennaio",
-                                            "Febbraio",
-                                            "Marzo",
-                                            "Aprile",
-                                            "Maggio",
-                                            "Giugno",
-                                            "Luglio",
-                                            "Agosto",
-                                            "Settembre",
-                                            "Ottobre",
-                                            "Novembre",
-                                            "Dicembre"
-                                        ]
-                                    },
-                                    "editor": {
-                                        "close": "Chiudi",
-                                        "create": {
-                                            "button": "Nuovo",
-                                            "submit": "Aggiungi",
-                                            "title": "Aggiungi nuovo elemento"
-                                        },
-                                        "edit": {
-                                            "button": "Modifica",
-                                            "submit": "Modifica",
-                                            "title": "Modifica elemento"
-                                        },
-                                        "error": {
-                                            "system": "Errore del sistema."
-                                        },
-                                        "multi": {
-                                            "info": "Gli elementi selezionati contengono valori diversi. Per modificare e impostare tutti gli elementi per questa selezione allo stesso valore, premi o clicca qui, altrimenti ogni cella manterrà il suo valore attuale.",
-                                            "noMulti": "Questa selezione può essere modificata individualmente, ma non se fa parte di un gruppo.",
-                                            "restore": "Annulla le modifiche",
-                                            "title": "Valori multipli"
-                                        },
-                                        "remove": {
-                                            "button": "Rimuovi",
-                                            "confirm": {
-                                                "_": "Sei sicuro di voler cancellare %d righe?",
-                                                "1": "Sei sicuro di voler cancellare 1 riga?"
-                                            },
-                                            "submit": "Rimuovi",
-                                            "title": "Rimuovi"
-                                        }
-                                    },
-                                    "thousands": ".",
-                                    "decimal": ",",
-                                    "stateRestore": {
-                                        "creationModal": {
-                                            "button": "Crea",
-                                            "columns": {
-                                                "search": "Colonna Cerca",
-                                                "visible": "Colonna Visibilità"
-                                            },
-                                            "name": "Nome:",
-                                            "order": "Ordinamento",
-                                            "paging": "Paginazione",
-                                            "scroller": "Scorri posizione",
-                                            "search": "Ricerca",
-                                            "searchBuilder": "Form di Ricerca",
-                                            "select": "Seleziona",
-                                            "title": "Crea nuovo Stato",
-                                            "toggleLabel": "Includi:"
-                                        },
-                                        "duplicateError": "Nome stato già presente",
-                                        "emptyError": "Il nome è obbligatorio",
-                                        "emptyStates": "Non ci sono stati salvati",
-                                        "removeConfirm": "Sei sicuro di eliminare lo Stato %s?",
-                                        "removeError": "Errore durante l'eliminazione dello Stato",
-                                        "removeJoiner": "e",
-                                        "removeSubmit": "Elimina",
-                                        "removeTitle": "Elimina Stato",
-                                        "renameButton": "Rinomina",
-                                        "renameLabel": "Nuovo nome per %s:",
-                                        "renameTitle": "Rinomina Stato"
+                                    order: [[0, 'asc']],
+                                    paginate: {
+                                        first: "Inizio",
+                                        last: "Fine",
+                                        next: "Avanti",
+                                        previous: "Indietro"
                                     }
                                 },
-                                order: [[0, 'asc']],
-                                paginate: {
-                                    first: "Inizio",
-                                    last: "Fine",
-                                    next: "Avanti",
-                                    previous: "Indietro"
-                                }
-                            },
-                                    );
-                            $("#dataInizio").change(function () {
-                                table.ajax.reload(null, false);
+                                        );
+                                $("#utente").change(function () {
+                                    table.ajax.reload(null, false);
+                                });
                             });
-                            $("#dataFine").change(function () {
-                                table.ajax.reload(null, false);
-                            });
-
-                            $("#permesso").change(function () {
-                                table.ajax.reload(null, false);
-                            });
-                            $("#utente").change(function () {
-                                table.ajax.reload(null, false);
-                            });
-
-                        });
         </script>
 
         <script>
@@ -690,6 +990,8 @@
 
 
         </script>
+
+        <script src="js/custom/ad_global.js"></script>
     </body>
 </html>
 

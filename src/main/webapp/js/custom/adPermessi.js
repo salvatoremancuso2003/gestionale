@@ -16,8 +16,8 @@ $(document).ready(function () {
             "url": "GetRichiesteServlet",
             "type": "POST",
             "data": function (d) {
-                d.dataInizio = $("#dataInizio").val();
-                d.dataFine = $("#dataFine").val();
+                d.dataInizio2 = $("#dataInizio2").val();
+                d.dataFine2 = $("#dataFine2").val();
                 d.permesso = $("#permesso").val();
                 d.utente = $("#utente").val();
             },
@@ -286,10 +286,10 @@ $(document).ready(function () {
         }
     },
             );
-    $("#dataInizio").change(function () {
+    $("#dataInizio2").change(function () {
         table.ajax.reload(null, false);
     });
-    $("#dataFine").change(function () {
+    $("#dataFine2").change(function () {
         table.ajax.reload(null, false);
     });
 

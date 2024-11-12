@@ -6,6 +6,7 @@ import Entity.Utente;
 import Utils.EncryptionUtil;
 import Utils.Utility;
 import static Utils.Utility.estraiEccezione;
+import static Utils.Utility.findRuoloById;
 import static Utils.Utility.logfile;
 import static Utils.Utility.tryParse;
 import jakarta.persistence.EntityManager;
@@ -54,8 +55,7 @@ public class InserisciNuovoUtente extends HttpServlet {
             String email = request.getParameter("email");
             String numero = request.getParameter("numero_di_telefono");
             String us_password = request.getParameter("password");
-            String ore_lavorativeString = request.getParameter("ore_lavorative");
-            int ore_lavorative = tryParse(ore_lavorativeString);
+            String ruolo_param = request.getParameter("ruolo");
 
             boolean isEditPass = Boolean.parseBoolean(request.getParameter("editPass"));
             boolean isUpdate = Boolean.parseBoolean(request.getParameter("update"));
@@ -139,6 +139,7 @@ public class InserisciNuovoUtente extends HttpServlet {
                 String ferieParam = request.getParameter("ferie");
                 String oreParam = request.getParameter("ore");
                 String ore_lavorative_param = request.getParameter("nuove_ore_lavorative");
+                String nuovoRuolo = request.getParameter("nuovoRuolo");
                 int nuove_ore_lavorative = tryParse(ore_lavorative_param);
                 int ferie = tryParse(ferieParam);
                 int ore = tryParse(oreParam);
@@ -151,6 +152,8 @@ public class InserisciNuovoUtente extends HttpServlet {
                 utente.setOre_contratto(nuove_ore_lavorative);
                 utente.setFerie_disponibili(ferie);
                 utente.setOre_disponibili(ore);
+                Ruolo ruolo = findRuoloById(tryParse(nuovoRuolo));
+                utente.setRuolo(ruolo);
                 em.merge(utente);
                 logfile.info("Utente aggiornato con successo!");
                 response.sendRedirect("edit_user.jsp?esito=OK&codice=007&userId=" + userIdParam);
@@ -162,7 +165,8 @@ public class InserisciNuovoUtente extends HttpServlet {
                 String username = "US_" + Utility.createNewRandomNumbers(2) + "." + email;
                 utente.setUsername(username);
                 utente.setNumero_di_telefono("+39" + numero);
-                utente.setOre_contratto(ore_lavorative);
+                String oreLavorativeParam = request.getParameter("ore_lavorative");
+                utente.setOre_contratto(tryParse(oreLavorativeParam));
                 String password = Utility.createNewRandomPassword(8);
                 String nomeCompleto = EncryptionUtil.decrypt(utente.getNome()) + " " + EncryptionUtil.decrypt(utente.getCognome());
 
@@ -172,8 +176,7 @@ public class InserisciNuovoUtente extends HttpServlet {
                 String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
                 utente.setPassword(hashedPassword);
                 utente.setStatus(2);
-                Ruolo ruolo = new Ruolo();
-                ruolo.setId(2);
+                Ruolo ruolo = findRuoloById(tryParse(ruolo_param));
                 utente.setRuolo(ruolo);
                 em.persist(utente);
                 logfile.info("Utente creato con successo!");
