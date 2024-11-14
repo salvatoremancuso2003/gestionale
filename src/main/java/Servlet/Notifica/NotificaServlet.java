@@ -47,7 +47,7 @@ public class NotificaServlet extends HttpServlet {
                 readNotification(request, response);
             }
         } catch (ServletException | IOException e) {
-            e.printStackTrace();
+            logfile.severe(estraiEccezione(e));
         }
     }
 
@@ -133,7 +133,7 @@ public class NotificaServlet extends HttpServlet {
                         } catch (Exception e) {
                             // Gestione delle eccezioni e log
                             logfile.severe(estraiEccezione(e));
-                            e.printStackTrace();
+                            
                         }
 
                         // Completa la notifica

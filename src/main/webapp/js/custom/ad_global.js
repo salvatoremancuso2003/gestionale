@@ -3,26 +3,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
  */
 
+document.getElementById('tipoPermesso').addEventListener('change', function () {
+    var selectedOption = this.options[this.selectedIndex];
+    var permessoId = selectedOption.getAttribute('data-id');
+    document.getElementById('idPermesso').value = permessoId;
+});
 
 function invioRichiestaSenzaOre() {
-    const formData = new URLSearchParams(new FormData(document.getElementById("richiediPermessoForm")));
-    formData.append("forzaInvio", "true");
-    formData.append("isCreate", "true");
 
-    fetch("RichiestaPermessoServlet", {
-        method: "POST",
-        body: formData
-    })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = "AD_gestionale.jsp?esito=OK&codice=009";
-                } else {
-                    throw new Error("Errore durante l'invio della richiesta.");
-                }
-            })
-            .catch(error => {
-                showErrorModal("Errore durante l'invio della richiesta.");
-            });
+    document.getElementById("isForzato").value = "true";
+    document.getElementById("isAdmin").value = "true";
+    document.getElementById("richiediPermessoForm").submit();
+
 }
 
 function showErrorModal(message) {
@@ -60,9 +52,7 @@ document.getElementById('tipoPermesso').addEventListener('change', function () {
     var hours = now.getHours().toString().padStart(2, '0');
     var minutes = now.getMinutes().toString().padStart(2, '0');
     var minDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
-
-
-    if (tipoPermesso === '1' || tipoPermesso === '2') {
+    if (tipoPermesso === 'NO') {
         var newDataInizio = document.createElement('input');
         newDataInizio.type = 'date';
         newDataInizio.className = 'form-control';
@@ -102,25 +92,18 @@ document.getElementById('tipoPermesso').addEventListener('change', function () {
         $('#dataInizio').change(function () {
             var date = new Date($(this).val());
             const day = date.getDay();
-            if (day == 0) {
+            if (day == 0 || day == 6) {
                 const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
                 errorDateModal.show();
                 $(this).val("");
-            } else if (day == 6) {
-                const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
-                errorDateModal.show();
-                $(this).val("");
+
             }
         });
 
         $('#dataFine').change(function () {
             var date = new Date($(this).val());
             const day = date.getDay();
-            if (day == 0) {
-                const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
-                errorDateModal.show();
-                $(this).val("");
-            } else if (day == 6) {
+            if (day == 0 || day == 6) {
                 const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
                 errorDateModal.show();
                 $(this).val("");
@@ -132,7 +115,7 @@ document.getElementById('tipoPermesso').addEventListener('change', function () {
 document.getElementById("richiediPermessoForm").addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const tipoPermesso = document.getElementById("tipoPermesso").value;
+    const id_permesso = document.getElementById("idPermesso").value;
     const dataInizio = document.getElementById("dataInizio").value;
     const dataFine = document.getElementById("dataFine").value;
 
@@ -142,10 +125,11 @@ document.getElementById("richiediPermessoForm").addEventListener("submit", funct
 
 
     const formData = new URLSearchParams();
-    formData.append("tipo_permesso", tipoPermesso);
+    formData.append("idPermesso", id_permesso);
     formData.append("data_inizio", dataInizio);
     formData.append("data_fine", dataFine);
     formData.append("isCheck", "true");
+    formData.append("isAdmin", "true");
 
     fetch("RichiestaPermessoServlet", {
         method: "POST",
@@ -161,7 +145,9 @@ document.getElementById("richiediPermessoForm").addEventListener("submit", funct
                 if (data.success) {
                     // Cambia isCreate a true per la creazione della richiesta
                     document.getElementById("isCheck").value = "false";
+                    document.getElementById("idPermesso").value = id_permesso;
                     document.getElementById("isCreate").value = "true";
+                    document.getElementById("isAdmin").value = "true";
                     document.getElementById("richiediPermessoForm").submit();
                 } else {
                     showErrorIns(data.message);
@@ -216,13 +202,7 @@ document.getElementById('tipoPermesso').addEventListener('change', function () {
     var todayWithTime = now.toISOString().slice(0, 16);
     dataInizio.setAttribute("min", todayWithTime);
     dataFine.setAttribute("min", todayWithTime);
-    if (tipoPermesso === '1') {
-        dataInizio.type = 'date';
-        dataFine.type = 'date';
-        var today = now.toISOString().split('T')[0];
-        dataInizio.setAttribute("min", today);
-        dataFine.setAttribute("min", today);
-    } else if (tipoPermesso === '2') {
+    if (tipoPermesso === 'NO') {
         dataInizio.type = 'date';
         dataFine.type = 'date';
         var today = now.toISOString().split('T')[0];

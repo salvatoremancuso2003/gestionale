@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.persistence.TypedQuery;
+import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -61,8 +62,12 @@ public class GetRichiesteServlet extends HttpServlet {
             String dataFineStr = request.getParameter("dataFine");
             String utenteIdStr = request.getParameter("utente");
             String tipoPermesso = request.getParameter("permesso");
+            HttpSession session = request.getSession();
+            String userId = session.getAttribute("userId").toString();
 
-            StringBuilder queryString = new StringBuilder("SELECT r FROM Richiesta r WHERE 1=1");
+            StringBuilder queryString = new StringBuilder("SELECT r FROM Richiesta r");
+
+            queryString.append(" WHERE r.utente.id != '").append(Long.valueOf(userId)).append("'");
 
             if (dataInizioStr != null && !dataInizioStr.isEmpty()) {
                 queryString.append(" AND r.data_inizio >= :dataInizio");

@@ -8,6 +8,7 @@ import Entity.InfoTrack;
 import Entity.Utente;
 import Utils.EncryptionUtil;
 import Utils.Utility;
+import static Utils.Utility.estraiEccezione;
 import static Utils.Utility.logfile;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -44,12 +45,12 @@ public class LoginServlet extends HttpServlet {
             }
 
         } catch (ServletException | IOException e) {
-            e.printStackTrace();
+            logfile.severe(estraiEccezione(e));
         }
 
     }
 
-    //LOGIN
+    // LOGIN
     protected void Login(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
@@ -91,12 +92,13 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("index.jsp?esito=KO&codice=000");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logfile.severe(estraiEccezione(e));
         }
     }
 
-    //RENDER PAGINE
-    private void redirectToPageByRole(HttpServletResponse response, HttpServletRequest request, int userId, int roleId) throws IOException {
+    // RENDER PAGINE
+    private void redirectToPageByRole(HttpServletResponse response, HttpServletRequest request, int userId, int roleId)
+            throws IOException {
         String targetPage;
 
         String isLogin = request.getParameter("isLogin");
@@ -128,18 +130,19 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("index.jsp?esito=KO");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logfile.severe(estraiEccezione(e));
         }
     }
 
-    //LOGOUT
+    // LOGOUT
     protected void Logout(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try {
             HttpSession session = request.getSession();
-            Utente userSession = (Utente) session.getAttribute("user");
-            InfoTrack.logoutTrack(EncryptionUtil.decrypt(userSession.getNome()), userSession);
+            String userId = session.getAttribute("userId").toString();
+            Utente User_session = Utility.findUserById(Long.valueOf(userId));
+            InfoTrack.logoutTrack(EncryptionUtil.decrypt(User_session.getNome()), User_session);
             request.getSession().invalidate();
 
             response.sendRedirect("index.jsp?esito=OK&codice=000");
@@ -150,7 +153,8 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the
+    // + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>POST</code> method.
      *

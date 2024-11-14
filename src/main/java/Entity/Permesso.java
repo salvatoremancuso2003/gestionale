@@ -35,6 +35,8 @@ public class Permesso implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private Si_no_enum rol;
+    
+    private int ordine;
 
     public Long getCodice() {
         return codice;
@@ -74,6 +76,14 @@ public class Permesso implements Serializable {
 
     public void setRol(Si_no_enum rol) {
         this.rol = rol;
+    }
+
+    public int getOrdine() {
+        return ordine;
+    }
+
+    public void setOrdine(int ordine) {
+        this.ordine = ordine;
     }
 
     @Override

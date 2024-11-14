@@ -315,52 +315,59 @@
 
 
     <!-- Modal Richiesta Permesso-->
-    <div class="modal fade" id="richiediPermessoModal" tabindex="-1" aria-labelledby="richiediPermessoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header Smartoop-bg-standard">
-                    <h5 class="modal-title text-white" id="richiediPermessoLabel">Richiesta Permesso</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="richiediPermessoForm" method="POST" action="RichiestaPermessoServlet" enctype="multipart/form-data">
-                        <input type="hidden" id="isCreate" name="isCreate" value="false">
-                        <input type="hidden" id="isCheck" name="isCheck" value="true">
-                        <% List <Permesso> AllTipiPermesso = Utility.getAllPermessi();%>
-                        <div class="mb-3">
-                            <label for="tipoPermesso" class="form-label">Tipo di Permesso</label>
-                            <select class="form-select" id="tipoPermesso" name="tipo_permesso" required>
-                                <option selected="" disabled>Seleziona permesso</option>
-                                <% for (Permesso p : AllTipiPermesso) { %>
-                                <option value="<%= p.getCodice() %>"><%= p.getDescrizione() %></option>
-                                <% } %>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="dataInizio" class="form-label">Data Inizio</label>
-                            <input type="datetime-local" class="form-control" id="dataInizio" name="data_inizio" required>
-                        </div>
+        <div class="modal fade" id="richiediPermessoModal" tabindex="-1" aria-labelledby="richiediPermessoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header Smartoop-bg-standard">
+                        <h5 class="modal-title text-white" id="richiediPermessoLabel">Richiesta Permesso</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="richiediPermessoForm" method="POST" action="RichiestaPermessoServlet" enctype="multipart/form-data">
+                            <input type="hidden" id="isCreate" name="isCreate" value="false">
+                            <input type="hidden" id="isCheck" name="isCheck" value="true">
+                            <input type="hidden" id="isForzato" name="forzaInvio" value="false">
+                            <input type="hidden" id="isAdmin" name="isAdmin" value="false">
+                            <input type="hidden" id="idPermesso" name="idPermesso" value="">
 
-                        <div class="mb-3">
-                            <label for="dataFine" class="form-label">Data Fine</label>
-                            <input type="datetime-local" class="form-control" id="dataFine" name="data_fine" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="note" class="form-label">Note</label>
-                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="allegato" class="form-label">Allegato (opzionale)</label>
-                            <input class="form-control" type="file" id="allegato" name="allegato">
-                        </div>
-                        <button type="submit" class="btn Smartoop-btn-standard" id="esitoModalButton1" >Invia Richiesta</button>
-                        <button type="button" class="btn btn-secondary" id="esitoModalButton2" style="display: none;" onclick="invioRichiestaSenzaOre()">Procedi senza modificare ore</button>
+                            <% List<Permesso> AllTipiPermesso = Utility.getAllPermessi(); %>
+                            <div class="mb-3">
+                                <label for="tipoPermesso" class="form-label">Tipo di Permesso</label>
+                                <select class="form-select" id="tipoPermesso" name="tipo_permesso" required>
+                                    <option selected="" disabled>Seleziona permesso</option>
+                                    <% for (Permesso p : AllTipiPermesso) { %>
+                                    <option value="<%= p.getOre() %>" data-id="<%= p.getCodice() %>">
+                                        <%= p.getDescrizione() %>
+                                    </option>
+                                    <% } %>
+                                </select>
+                            </div>
 
-                    </form>
+                            <div class="mb-3">
+                                <label for="dataInizio" class="form-label">Data Inizio</label>
+                                <input type="datetime-local" class="form-control" id="dataInizio" name="data_inizio" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="dataFine" class="form-label">Data Fine</label>
+                                <input type="datetime-local" class="form-control" id="dataFine" name="data_fine" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="note" class="form-label">Note</label>
+                                <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="allegato" class="form-label">Allegato (opzionale)</label>
+                                <input class="form-control" type="file" id="allegato" name="allegato">
+                            </div>
+                            <button type="submit" class="btn Smartoop-btn-standard" id="esitoModalButton1" >Invia Richiesta</button>
+                            <button type="button" class="btn btn-secondary" id="esitoModalButton2" style="display: none;" onclick="invioRichiestaSenzaOre()">Procedi senza modificare ore</button>
+
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Modal Notifiche -->
     <div class="modal fade modal-xl" id="notificheModal" tabindex="-1" aria-labelledby="notificheModalLabel" aria-hidden="true">

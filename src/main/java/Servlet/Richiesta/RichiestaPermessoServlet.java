@@ -27,6 +27,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -59,16 +60,22 @@ public class RichiestaPermessoServlet extends HttpServlet {
             throws ServletException, IOException {
 
         boolean isCreate = Boolean.parseBoolean(request.getParameter("isCreate"));
+        boolean forzaInvio = Boolean.parseBoolean(request.getParameter("forzaInvio"));
         boolean isCheck = Boolean.parseBoolean(request.getParameter("isCheck"));
+        boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
 
         try {
-            if (isCreate == true) {
-                creaRichiesta(request, response);
-            } else if (isCheck == true) {
+            if (isCreate || forzaInvio || isCreate && forzaInvio) {
+                if (isAdmin) {
+                    creaRichiestaAdmin(request, response);
+                } else {
+                    creaRichiesta(request, response);
+                }
+            } else if (isCheck) {
                 checkOreDisponibili(request, response);
             }
         } catch (ServletException | IOException e) {
-            e.printStackTrace();
+            logfile.severe(estraiEccezione(e));
         }
 
     }
@@ -84,10 +91,12 @@ public class RichiestaPermessoServlet extends HttpServlet {
 
             Richiesta richiesta = new Richiesta();
 
-            Utente utente = (Utente) request.getSession().getAttribute("user");
+            HttpSession session = request.getSession();
+            String userId = session.getAttribute("userId").toString();
+            Utente utente = Utility.findUserById(Long.valueOf(userId));
             richiesta.setUtente(utente);
 
-            String tipoPermessoStr = request.getParameter("tipo_permesso");
+            String tipoPermessoStr = request.getParameter("idPermesso");
             Permesso permesso = em.createQuery("SELECT p FROM Permesso p WHERE p.codice = :codice", Permesso.class)
                     .setParameter("codice", Long.valueOf(tipoPermessoStr))
                     .getSingleResult();
@@ -129,6 +138,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
                         response.sendRedirect("US_gestionale.jsp?esito=KO2&codice=001");
                         return;
                     }
+
                 } else if (richiesta.getTipo_permesso().getOre().equals(Si_no_enum.SI)) {
                     Long count = em.createQuery(
                             "SELECT COUNT(r) FROM Richiesta r WHERE r.utente = :utente AND r.tipo_permesso.ore = :giornaliero AND "
@@ -232,6 +242,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
 
                 response.setContentType("text/plain;charset=UTF-8");
                 response.sendRedirect("US_gestionale.jsp?esito=OK&codice=001");
+
                 InfoTrack.richiestaTrackUpdate(EncryptionUtil.decrypt(utente.getNome()), richiesta, utente);
 
             } catch (ServletException | IOException | ParseException e) {
@@ -242,7 +253,9 @@ public class RichiestaPermessoServlet extends HttpServlet {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
+
             response.sendRedirect("US_gestionale.jsp?esito=KO&codice=001");
+
         } finally {
             em.close();
         }
@@ -256,7 +269,8 @@ public class RichiestaPermessoServlet extends HttpServlet {
             entityManagerFactory = Persistence.createEntityManagerFactory("gestionale");
             entityManager = entityManagerFactory.createEntityManager();
 
-            TipoDocumento tipoDocumento = entityManager.createQuery("SELECT t FROM TipoDocumento t WHERE t.tipo = :tipo", TipoDocumento.class)
+            TipoDocumento tipoDocumento = entityManager.createQuery("SELECT t FROM TipoDocumento t WHERE t.tipo = :tipo", TipoDocumento.class
+            )
                     .setParameter("tipo", tipo)
                     .getSingleResult();
             return tipoDocumento;
@@ -293,13 +307,194 @@ public class RichiestaPermessoServlet extends HttpServlet {
         return giorniRichiesti;
     }
 
+    protected void creaRichiestaAdmin(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+
+        try {
+            transaction.begin();
+
+            Richiesta richiesta = new Richiesta();
+
+            HttpSession session = request.getSession();
+            String userId = session.getAttribute("userId").toString();
+            Utente utente = Utility.findUserById(Long.valueOf(userId));
+            richiesta.setUtente(utente);
+
+            String tipoPermessoStr = request.getParameter("idPermesso");
+            Permesso permesso = em.createQuery("SELECT p FROM Permesso p WHERE p.codice = :codice", Permesso.class)
+                    .setParameter("codice", Long.valueOf(tipoPermessoStr))
+                    .getSingleResult();
+            richiesta.setTipo_permesso(permesso);
+
+            String dataInizioStr = request.getParameter("data_inizio");
+            String dataFineStr = request.getParameter("data_fine");
+
+            boolean isFerie = permesso.getDescrizione().equalsIgnoreCase("Ferie");
+            boolean isMalattia = permesso.getDescrizione().equalsIgnoreCase("Malattia");
+
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat dateFinalFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            Date dataInizio;
+            Date finalDate;
+
+            try {
+                if (isFerie || isMalattia) {
+                    dataInizio = dateFormat.parse(dataInizioStr);
+                    finalDate = dateFinalFormat.parse(dataFineStr + " 23:59:59");
+                } else {
+                    dataInizio = dateTimeFormat.parse(dataInizioStr);
+                    finalDate = dateTimeFormat.parse(dataFineStr);
+                }
+
+                if (richiesta.getTipo_permesso().getOre().equals(Si_no_enum.NO)) {
+                    Long count = em.createQuery(
+                            "SELECT COUNT(r) FROM Richiesta r WHERE r.utente = :utente AND "
+                            + "(:dataInizio BETWEEN r.data_inizio AND r.data_fine OR :dataFine BETWEEN r.data_inizio AND r.data_fine "
+                            + "OR r.data_inizio BETWEEN :dataInizio AND :dataFine OR r.data_fine BETWEEN :dataInizio AND :dataFine)", Long.class)
+                            .setParameter("utente", utente)
+                            .setParameter("dataInizio", new Timestamp(dataInizio.getTime()))
+                            .setParameter("dataFine", new Timestamp(finalDate.getTime()))
+                            .getSingleResult();
+
+                    if (count > 0) {
+                        response.sendRedirect("AD_gestionale.jsp?esito=KO2&codice=001");
+                        return;
+                    }
+
+                } else if (richiesta.getTipo_permesso().getOre().equals(Si_no_enum.SI)) {
+                    Long count = em.createQuery(
+                            "SELECT COUNT(r) FROM Richiesta r WHERE r.utente = :utente AND r.tipo_permesso.ore = :giornaliero AND "
+                            + "(:dataInizio BETWEEN r.data_inizio AND r.data_fine OR :dataFine BETWEEN r.data_inizio AND r.data_fine "
+                            + "OR r.data_inizio BETWEEN :dataInizio AND :dataFine OR r.data_fine BETWEEN :dataInizio AND :dataFine)", Long.class)
+                            .setParameter("utente", utente)
+                            .setParameter("giornaliero", Si_no_enum.NO)
+                            .setParameter("dataInizio", new Timestamp(dataInizio.getTime()))
+                            .setParameter("dataFine", new Timestamp(finalDate.getTime()))
+                            .getSingleResult();
+
+                    if (count > 0) {
+                        response.sendRedirect("AD_gestionale.jsp?esito=KO2&codice=001");
+                        return;
+                    }
+                }
+
+                richiesta.setData_inizio(dataInizio);
+                richiesta.setData_fine(finalDate);
+
+                richiesta.setNote(request.getParameter("note"));
+
+                Part filePart = request.getPart("allegato");
+                if (filePart != null && filePart.getSize() > 0) {
+                    String originalFileName = filePart.getSubmittedFileName();
+                    int dotIndex = originalFileName.lastIndexOf(".");
+
+                    if (dotIndex != -1) {
+                        String baseName = originalFileName.substring(0, dotIndex);
+                        String extension = originalFileName.substring(dotIndex);
+
+                        String fileName = originalFileName;
+                        String baseDirectory = Utility.config.getString("basePath");
+                        String filePath = baseDirectory + fileName;
+                        File file = new File(filePath);
+
+                        int counter = 1;
+                        while (file.exists()) {
+                            fileName = baseName + "_" + counter + extension;
+                            filePath = baseDirectory + fileName;
+                            file = new File(filePath);
+                            counter++;
+                        }
+
+                        file.getParentFile().mkdirs();
+                        filePart.write(filePath);
+
+                        FileEntity fileEntity = new FileEntity();
+                        fileEntity.setFilename(fileName);
+                        fileEntity.setFilepath(filePath);
+                        fileEntity.setFileSize(filePart.getSize());
+                        TipoDocumento tipoDocumento = findTipoDocumento(Tipo_documento_enum.RICHIESTA_PERMESSO);
+                        fileEntity.setType(tipoDocumento);
+                        fileEntity.setDescription(request.getParameter("note"));
+                        fileEntity.setUploadDate(new Timestamp(new Date().getTime()));
+                        fileEntity.setUser(utente);
+
+                        if (fileName.endsWith(".pdf")) {
+                            try (PDDocument document = PDDocument.load(file); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                                document.save(baos);
+                                fileEntity.setFileContent(baos.toByteArray());
+                            }
+                        } else if (fileName.endsWith(".docx")) {
+                            try (XWPFDocument document = new XWPFDocument(new FileInputStream(file))) {
+                                byte[] bytes = new byte[0];
+                                for (XWPFPictureData picture : document.getAllPictures()) {
+                                    bytes = picture.getData();
+                                }
+                                fileEntity.setFileContent(bytes);
+                            }
+                        } else if (fileName.endsWith(".jpeg") || fileName.endsWith(".jpg") || fileName.endsWith(".png")) {
+                            try (FileInputStream inputStream = new FileInputStream(file)) {
+                                byte[] bytes = new byte[(int) file.length()];
+                                inputStream.read(bytes);
+                                fileEntity.setFileContent(bytes);
+                            }
+                        } else if (fileName.endsWith(".tiff") || fileName.endsWith(".tif")) {
+                            try (FileInputStream inputStream = new FileInputStream(file); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead;
+                                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                                    outputStream.write(buffer, 0, bytesRead);
+                                }
+                                fileEntity.setFileContent(outputStream.toByteArray());
+                            }
+                        }
+                        em.persist(fileEntity);
+                        richiesta.setAllegato(fileEntity);
+                    } else {
+                        richiesta.setAllegato(null);
+                    }
+                } else {
+                    richiesta.setAllegato(null);
+                }
+
+                richiesta.setTimestamp(new Timestamp(new Date().getTime()));
+                richiesta.setStato(Stato_enum.IN_ATTESA);
+
+                em.persist(richiesta);
+                transaction.commit();
+
+                response.setContentType("text/plain;charset=UTF-8");
+                response.sendRedirect("AD_gestionale.jsp?esito=OK&codice=001");
+
+                InfoTrack.richiestaTrackUpdate(EncryptionUtil.decrypt(utente.getNome()), richiesta, utente);
+
+            } catch (ServletException | IOException | ParseException e) {
+                logfile.severe(estraiEccezione(e));
+
+            }
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+
+            response.sendRedirect("AD_gestionale.jsp?esito=KO&codice=001");
+
+        } finally {
+            em.close();
+        }
+    }
+
     protected void checkOreDisponibili(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         try {
             EntityManager em = Persistence.createEntityManagerFactory("gestionale").createEntityManager();
 
-            String tipoPermessoStr = request.getParameter("tipo_permesso");
+            String tipoPermessoStr = request.getParameter("idPermesso");
             String dataInizioStr = request.getParameter("data_inizio");
             String dataFineStr = request.getParameter("data_fine");
 
@@ -314,9 +509,11 @@ public class RichiestaPermessoServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("{\"error\":\"Utente non autenticato.\"}");
                 return;
+
             }
 
-            Permesso permesso = em.createQuery("SELECT p FROM Permesso p WHERE p.codice = :codice", Permesso.class)
+            Permesso permesso = em.createQuery("SELECT p FROM Permesso p WHERE p.codice = :codice", Permesso.class
+            )
                     .setParameter("codice", Long.valueOf(tipoPermessoStr))
                     .getSingleResult();
 
@@ -326,7 +523,7 @@ public class RichiestaPermessoServlet extends HttpServlet {
             Date dataInizio;
             Date dataFine;
 
-            if (permesso.getCodice() == 3) { // Permesso a ore
+            if (permesso.getOre().equals(Si_no_enum.SI)) { // Permesso a ore
                 dataInizio = dateTimeFormat.parse(dataInizioStr);
                 dataFine = dateTimeFormat.parse(dataFineStr);
             } else { // Permesso a giorni
@@ -343,19 +540,19 @@ public class RichiestaPermessoServlet extends HttpServlet {
             boolean permessoApprovato = false;
             String messaggio = "";
 
-            if (permesso.getCodice() == 1) { // Ferie
+            if (permesso.getFerie().equals(Si_no_enum.SI)) { // Ferie
                 if (ferieDisponibili >= giorniRichiesti) {
                     permessoApprovato = true;
                 } else {
                     messaggio = "Ferie insufficienti. Disponibili: " + ferieDisponibili + " giorni.";
                 }
-            } else if (permesso.getCodice() == 3) { // Ore
+            } else if (permesso.getOre().equals(Si_no_enum.SI)) { // Ore
                 if (oreDisponibili >= oreRichieste) {
                     permessoApprovato = true;
                 } else {
                     messaggio = "Ore insufficienti. Disponibili: " + oreDisponibili + " ore.";
                 }
-            } else if (permesso.getCodice() == 2) { // Altro tipo di permesso
+            } else if (permesso.getFerie().equals(Si_no_enum.NO) && permesso.getRol().equals(Si_no_enum.NO)) { // Altro tipo di permesso
                 permessoApprovato = true;
             } else {
                 messaggio = "Tipo di permesso non valido.";

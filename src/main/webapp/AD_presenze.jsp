@@ -189,13 +189,13 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="dataInizio" class="form-label SmartOOP-text-standard" style="font-weight: bold">Intervallo data di inizio</label>
+                            <label for="dataInizio2" class="form-label SmartOOP-text-standard" style="font-weight: bold">Intervallo data di inizio</label>
                             <input type="date" id="dataInizio2" name="dataInizio2" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="dataFine" class="form-label SmartOOP-text-standard" style="font-weight: bold">Intervallo data di fine</label>
+                            <label for="dataFine2" class="form-label SmartOOP-text-standard" style="font-weight: bold">Intervallo data di fine</label>
                             <input type="date" id="dataFine2" name="dataFine2" class="form-control">
                         </div>
                     </div>
@@ -275,13 +275,19 @@
                         <form id="richiediPermessoForm" method="POST" action="RichiestaPermessoServlet" enctype="multipart/form-data">
                             <input type="hidden" id="isCreate" name="isCreate" value="false">
                             <input type="hidden" id="isCheck" name="isCheck" value="true">
-                            <% List <Permesso> AllTipiPermesso = Utility.getAllPermessi();%>
+                            <input type="hidden" id="isForzato" name="forzaInvio" value="false">
+                            <input type="hidden" id="isAdmin" name="isAdmin" value="false">
+                            <input type="hidden" id="idPermesso" name="idPermesso" value="">
+
+                            <% List<Permesso> AllTipiPermesso = Utility.getAllPermessi(); %>
                             <div class="mb-3">
                                 <label for="tipoPermesso" class="form-label">Tipo di Permesso</label>
                                 <select class="form-select" id="tipoPermesso" name="tipo_permesso" required>
                                     <option selected="" disabled>Seleziona permesso</option>
                                     <% for (Permesso p : AllTipiPermesso) { %>
-                                    <option value="<%= p.getCodice() %>"><%= p.getDescrizione() %></option>
+                                    <option value="<%= p.getOre() %>" data-id="<%= p.getCodice() %>">
+                                        <%= p.getDescrizione() %>
+                                    </option>
                                     <% } %>
                                 </select>
                             </div>

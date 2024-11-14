@@ -225,7 +225,7 @@
                             <select id="permesso" class="form-control" name="permesso">
                                 <option selected="" value="Qualsiasi">Qualsiasi</option>
                                 <% for (Permesso p : permessi) {%>
-                                <option value="<%=p.getCodice()%>"><%=p.getDescrizione()%></option>
+                                <option value="<%= p.getOre() %>"><%= p.getDescrizione() %></option>
                                 <% } %>
                             </select>
                         </div>
@@ -304,13 +304,19 @@
                         <form id="richiediPermessoForm" method="POST" action="RichiestaPermessoServlet" enctype="multipart/form-data">
                             <input type="hidden" id="isCreate" name="isCreate" value="false">
                             <input type="hidden" id="isCheck" name="isCheck" value="true">
-                            <% List <Permesso> AllTipiPermesso = Utility.getAllPermessi();%>
+                            <input type="hidden" id="isForzato" name="forzaInvio" value="false">
+                            <input type="hidden" id="isAdmin" name="isAdmin" value="false">
+                            <input type="hidden" id="idPermesso" name="idPermesso" value="">
+
+                            <% List<Permesso> AllTipiPermesso = Utility.getAllPermessi(); %>
                             <div class="mb-3">
                                 <label for="tipoPermesso" class="form-label">Tipo di Permesso</label>
                                 <select class="form-select" id="tipoPermesso" name="tipo_permesso" required>
                                     <option selected="" disabled>Seleziona permesso</option>
                                     <% for (Permesso p : AllTipiPermesso) { %>
-                                    <option value="<%= p.getCodice() %>"><%= p.getDescrizione() %></option>
+                                    <option value="<%= p.getOre() %>" data-id="<%= p.getCodice() %>">
+                                        <%= p.getDescrizione() %>
+                                    </option>
                                     <% } %>
                                 </select>
                             </div>
@@ -537,10 +543,11 @@
 
                     <div class="modal-body">
                         <form id="notificaForm" action="NotificaServlet" method="POST">
-                            Vuoi gestire la richiesta con ID <span id="richiestaIdVisualizzato"></span>? 
+                            <input type="hidden" id="richiestaIdVisualizzato" >
                             l'utente <span id="utenteR"></span>
-                            ha richiesto il permesso <span id="richiestaDescr" ></span>.
-                            Dal <span id="richiestaDataN"></span> al <span id="richiestaDataF"></span>.
+                            ha richiesto il permesso di tipo <span id="richiestaDescr" ></span>
+                            dal giorno :
+                            <span id="richiestaDataN"></span> al <span id="richiestaDataF"></span>.
 
                             <!-- Campo nascosto per inviare il parametro visual -->
                             <input type="hidden" id="visual" name="visual" value="true">
@@ -566,8 +573,6 @@
             </div>
         </div>
 
-
-
         <!-- jQuery e Bootstrap JS -->
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/External/jquery-3.7.1.min.js"></script>
@@ -577,6 +582,7 @@
         <script src="js/custom/globalModal.js"></script>
         <script src="js/custom/global.js"></script>
         <script src="js/custom/adPermessi.js"></script>
+        <script src="js/custom/ad_global.js"></script>
 
     </body>
 </html>
