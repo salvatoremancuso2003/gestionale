@@ -12,7 +12,6 @@
 <%@page import="Entity.Utente"%>
 <%@page import="Entity.Presenza"%>
 <%@page import="Entity.Permesso"%>
-<%@page import="Entity.Presenza"%>
 <%@page import="Entity.TipoDocumento"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.sql.Timestamp"%>
@@ -353,13 +352,19 @@
                         <form id="richiediPermessoForm" method="POST" action="RichiestaPermessoServlet" enctype="multipart/form-data">
                             <input type="hidden" id="isCreate" name="isCreate" value="false">
                             <input type="hidden" id="isCheck" name="isCheck" value="true">
-                            <% List <Permesso> AllTipiPermesso = Utility.getAllPermessi();%>
+                            <input type="hidden" id="isForzato" name="forzaInvio" value="false">
+                            <input type="hidden" id="isAdmin" name="isAdmin" value="false">
+                            <input type="hidden" id="idPermesso" name="idPermesso" value="">
+
+                            <% List<Permesso> AllTipiPermesso = Utility.getAllPermessi(); %>
                             <div class="mb-3">
                                 <label for="tipoPermesso" class="form-label">Tipo di Permesso</label>
                                 <select class="form-select" id="tipoPermesso" name="tipo_permesso" required>
                                     <option selected="" disabled>Seleziona permesso</option>
                                     <% for (Permesso p : AllTipiPermesso) { %>
-                                    <option value="<%= p.getCodice() %>"><%= p.getDescrizione() %></option>
+                                    <option value="<%= p.getOre() %>" data-id="<%= p.getCodice() %>">
+                                        <%= p.getDescrizione() %>
+                                    </option>
                                     <% } %>
                                 </select>
                             </div>

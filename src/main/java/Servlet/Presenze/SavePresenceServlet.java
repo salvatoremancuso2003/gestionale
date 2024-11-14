@@ -51,7 +51,7 @@ public class SavePresenceServlet extends HttpServlet {
             }
 
         } catch (ServletException e) {
-            e.printStackTrace();
+            logfile.severe(estraiEccezione(e));
 
         }
     }

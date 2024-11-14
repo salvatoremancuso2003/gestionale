@@ -48,7 +48,8 @@ public class InserisciNuovoUtente extends HttpServlet {
             }
 
             HttpSession session = request.getSession();
-            Utente AdminUser = (Utente) session.getAttribute("user");
+            String Admin_userId = session.getAttribute("userId").toString();
+            Utente Admin_user = Utility.findUserById(Long.valueOf(Admin_userId));
             Utente us = (Utente) request.getSession().getAttribute("user");
             String nome = request.getParameter("nome");
             String cognome = request.getParameter("cognome");
@@ -181,7 +182,7 @@ public class InserisciNuovoUtente extends HttpServlet {
                 em.persist(utente);
                 logfile.info("Utente creato con successo!");
                 response.sendRedirect("AD_gestioneUtente.jsp?esito=OK&codice=006");
-                InfoTrack.insertNewUser(EncryptionUtil.decrypt(AdminUser.getNome()), AdminUser);
+                InfoTrack.insertNewUser(EncryptionUtil.decrypt(Admin_user.getNome()), Admin_user);
             }
 
             et.commit();

@@ -503,7 +503,7 @@ public class Utility {
             emf = Persistence.createEntityManagerFactory("gestionale");
             em = emf.createEntityManager();
             List<Permesso> permessi = em.createQuery(
-                    "SELECT p FROM Permesso p", Permesso.class
+                    "SELECT p FROM Permesso p ORDER BY p.ordine", Permesso.class
             ).getResultList();
 
             if (!permessi.isEmpty()) {

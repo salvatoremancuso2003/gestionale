@@ -339,26 +339,18 @@ function segnaComeLetto() {
     });
 }
 
+document.getElementById('tipoPermesso').addEventListener('change', function () {
+    var selectedOption = this.options[this.selectedIndex];
+    var permessoId = selectedOption.getAttribute('data-id');
+    document.getElementById('idPermesso').value = permessoId;
+});
+
 
 function invioRichiestaSenzaOre() {
-    const formData = new URLSearchParams(new FormData(document.getElementById("richiediPermessoForm")));
-    formData.append("forzaInvio", "true");
-    formData.append("isCreate", "true");
 
-    fetch("RichiestaPermessoServlet", {
-        method: "POST",
-        body: formData
-    })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = "US_gestionale.jsp?esito=OK&codice=009";
-                } else {
-                    throw new Error("Errore durante l'invio della richiesta.");
-                }
-            })
-            .catch(error => {
-                showErrorModal("Errore durante l'invio della richiesta.");
-            });
+    document.getElementById("isForzato").value = "true";
+    document.getElementById("richiediPermessoForm").submit();
+
 }
 
 function showErrorModal(message) {
@@ -398,8 +390,7 @@ document.getElementById('tipoPermesso').addEventListener('change', function () {
     var minutes = now.getMinutes().toString().padStart(2, '0');
     var minDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
 
-
-    if (tipoPermesso === '1' || tipoPermesso === '2') {
+    if (tipoPermesso === 'NO') {
         var newDataInizio = document.createElement('input');
         newDataInizio.type = 'date';
         newDataInizio.className = 'form-control';
@@ -439,11 +430,7 @@ document.getElementById('tipoPermesso').addEventListener('change', function () {
         $('#dataInizio').change(function () {
             var date = new Date($(this).val());
             const day = date.getDay();
-            if (day == 0) {
-                const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
-                errorDateModal.show();
-                $(this).val("");
-            } else if (day == 6) {
+            if (day == 0 || day == 6) {
                 const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
                 errorDateModal.show();
                 $(this).val("");
@@ -453,122 +440,117 @@ document.getElementById('tipoPermesso').addEventListener('change', function () {
         $('#dataFine').change(function () {
             var date = new Date($(this).val());
             const day = date.getDay();
-            if (day == 0) {
+            if (day == 0 || day == 6) {
                 const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
                 errorDateModal.show();
-                $(this).val("");
-            } else if (day == 6) {
-                const errorDateModal = new bootstrap.Modal(document.getElementById('errorDateModal'));
-                errorDateModal.show();
-                $(this).val("");
+
             }
+            ;
         });
     });
-});
 
-document.getElementById("richiediPermessoForm").addEventListener("submit", function (event) {
-    event.preventDefault();
+    document.getElementById("richiediPermessoForm").addEventListener("submit", function (event) {
+        event.preventDefault();
 
-    const tipoPermesso = document.getElementById("tipoPermesso").value;
-    const dataInizio = document.getElementById("dataInizio").value;
-    const dataFine = document.getElementById("dataFine").value;
-
-
-    document.getElementById("isCheck").value = "true";
-    document.getElementById("isCreate").value = "false";
+        const id_permesso = document.getElementById("idPermesso").value;
+        const dataInizio = document.getElementById("dataInizio").value;
+        const dataFine = document.getElementById("dataFine").value;
 
 
-    const formData = new URLSearchParams();
-    formData.append("tipo_permesso", tipoPermesso);
-    formData.append("data_inizio", dataInizio);
-    formData.append("data_fine", dataFine);
-    formData.append("isCheck", "true");
-
-    fetch("RichiestaPermessoServlet", {
-        method: "POST",
-        body: formData
-    })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Errore generico");
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Cambia isCreate a true per la creazione della richiesta
-                    document.getElementById("isCheck").value = "false";
-                    document.getElementById("isCreate").value = "true";
-                    document.getElementById("richiediPermessoForm").submit();
-                } else {
-                    showErrorIns(data.message);
-                }
-            })
-            .catch(error => {
-                showErrorModal("Errore durante la verifica delle ore disponibili.");
-            });
-});
-
-function showErrorModal(message) {
-    const esitoModalBody = document.getElementById("esitoModalBody");
-    const esitoModalHeader = document.getElementById("modal-header");
-    const esitoModalButton = document.getElementById("esitoModalButton");
-
-    esitoModalBody.textContent = message;
-    esitoModalBody.classList.add('SmartOOP-text-error');
-
-    esitoModalHeader.style.background = '#dc3545';
-    esitoModalHeader.style.color = 'white';
-    esitoModalHeader.querySelector('h5').textContent = "Operazione non andata a buon fine!";
-    esitoModalButton.classList.add('Smartoop-btn-error');
-
-    const esitoModal = new bootstrap.Modal(document.getElementById('esitoModal'));
-    esitoModal.show();
-}
-
-function showErrorIns(message) {
-    const esitoModalBody = document.getElementById("esitoModalBodyIns");
-    const esitoModalHeader = document.getElementById("modal-headerIns");
-    const esitoModalButton = document.getElementById("esitoModalButton");
-    const esitoModalButton2 = document.getElementById("esitoModalButton2");
-
-    esitoModalBody.textContent = message;
-    //esitoModalBody.classList.add('text-warning');
-
-    esitoModalHeader.style.background = '#ffc107';
-    esitoModalHeader.style.color = 'white';
-    esitoModalHeader.querySelector('h5').textContent = "Attenzione!";
-    esitoModalButton.classList.add('Smartoop-btn-error');
-
-    const esitoModal = new bootstrap.Modal(document.getElementById('esitoModalIns'));
-    esitoModal.show();
-}
+        document.getElementById("isCheck").value = "true";
+        document.getElementById("isCreate").value = "false";
 
 
-document.getElementById('tipoPermesso').addEventListener('change', function () {
-    var tipoPermesso = this.value;
-    var dataInizio = document.getElementById('dataInizio');
-    var dataFine = document.getElementById('dataFine');
-    var now = new Date();
-    var todayWithTime = now.toISOString().slice(0, 16);
-    dataInizio.setAttribute("min", todayWithTime);
-    dataFine.setAttribute("min", todayWithTime);
-    if (tipoPermesso === '1') {
-        dataInizio.type = 'date';
-        dataFine.type = 'date';
-        var today = now.toISOString().split('T')[0];
-        dataInizio.setAttribute("min", today);
-        dataFine.setAttribute("min", today);
-    } else if (tipoPermesso === '2') {
-        dataInizio.type = 'date';
-        dataFine.type = 'date';
-        var today = now.toISOString().split('T')[0];
-        dataInizio.setAttribute("min", today);
-        dataFine.setAttribute("min", today);
-    } else {
-        dataInizio.type = 'datetime-local';
-        dataFine.type = 'datetime-local';
+        const formData = new URLSearchParams();
+        formData.append("idPermesso", id_permesso);
+        formData.append("data_inizio", dataInizio);
+        formData.append("data_fine", dataFine);
+        formData.append("isCheck", "true");
+        formData.append("isAdmin", "false");
+
+        fetch("RichiestaPermessoServlet", {
+            method: "POST",
+            body: formData
+        })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Errore generico");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Cambia isCreate a true per la creazione della richiesta
+                        document.getElementById("isCheck").value = "false";
+                        document.getElementById("idPermesso").value = id_permesso;
+                        document.getElementById("isCreate").value = "true";
+                        document.getElementById("isAdmin").value = "false";
+                        document.getElementById("richiediPermessoForm").submit();
+                    } else {
+                        showErrorIns(data.message);
+                    }
+                })
+                .catch(error => {
+                    showErrorModal("Errore durante la verifica delle ore disponibili.");
+                });
+    });
+
+
+    function showErrorModal(message) {
+        const esitoModalBody = document.getElementById("esitoModalBody");
+        const esitoModalHeader = document.getElementById("modal-header");
+        const esitoModalButton = document.getElementById("esitoModalButton");
+
+        esitoModalBody.textContent = message;
+        esitoModalBody.classList.add('SmartOOP-text-error');
+
+        esitoModalHeader.style.background = '#dc3545';
+        esitoModalHeader.style.color = 'white';
+        esitoModalHeader.querySelector('h5').textContent = "Operazione non andata a buon fine!";
+        esitoModalButton.classList.add('Smartoop-btn-error');
+
+        const esitoModal = new bootstrap.Modal(document.getElementById('esitoModal'));
+        esitoModal.show();
+    }
+
+    function showErrorIns(message) {
+        const esitoModalBody = document.getElementById("esitoModalBodyIns");
+        const esitoModalHeader = document.getElementById("modal-headerIns");
+        const esitoModalButton = document.getElementById("esitoModalButton");
+        const esitoModalButton2 = document.getElementById("esitoModalButton2");
+
+        esitoModalBody.textContent = message;
+        //esitoModalBody.classList.add('text-warning');
+
+        esitoModalHeader.style.background = '#ffc107';
+        esitoModalHeader.style.color = 'white';
+        esitoModalHeader.querySelector('h5').textContent = "Attenzione!";
+        esitoModalButton.classList.add('Smartoop-btn-error');
+
+        const esitoModal = new bootstrap.Modal(document.getElementById('esitoModalIns'));
+        esitoModal.show();
+    }
+
+
+    document.getElementById('tipoPermesso').addEventListener('change', function () {
+        var tipoPermesso = this.value;
+        var dataInizio = document.getElementById('dataInizio');
+        var dataFine = document.getElementById('dataFine');
+        var now = new Date();
+        var todayWithTime = now.toISOString().slice(0, 16);
         dataInizio.setAttribute("min", todayWithTime);
         dataFine.setAttribute("min", todayWithTime);
-    }
+        if (tipoPermesso === '1' || tipoPermesso === '2') {
+            dataInizio.type = 'date';
+            dataFine.type = 'date';
+            var today = now.toISOString().split('T')[0];
+            dataInizio.setAttribute("min", today);
+            dataFine.setAttribute("min", today);
+        } else {
+            dataInizio.type = 'datetime-local';
+            dataFine.type = 'datetime-local';
+            dataInizio.setAttribute("min", todayWithTime);
+            dataFine.setAttribute("min", todayWithTime);
+        }
+    })
 });
